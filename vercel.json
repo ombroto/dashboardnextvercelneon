@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "src/app/api/admin/import/zip/route.ts": {
+      "maxDuration": 300
+    }
+  }
+}
