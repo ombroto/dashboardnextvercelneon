@@ -569,7 +569,7 @@ git commit -m "feat: add Drizzle schema and Neon connection"
 
 - [ ] **Step 1: Set up Vitest**
 
-Write `vitest.config.ts`:
+Write `vitest.config.ts`. Note (added after Task 16 surfaced it): once `next-auth`/`@auth/core` are imported by any test-reachable module, Vitest's default module resolution hits a `Cannot find module 'next/server'` error — Next.js 16 doesn't ship an `exports` map Vitest's resolver expects for that subpath. The `test.server.deps.inline` option below forces Vitest to process those two packages through its own transform pipeline instead of Node's native resolution, which fixes it; the content below already includes this:
 
 ```ts
 import { defineConfig } from 'vitest/config';
@@ -581,6 +581,11 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
+    server: {
+      deps: {
+        inline: ['next-auth', '@auth/core'],
+      },
+    },
   },
   resolve: {
     alias: {
