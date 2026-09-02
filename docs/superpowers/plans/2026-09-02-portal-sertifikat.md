@@ -1007,7 +1007,7 @@ git commit -m "feat: add ZIP manifest/filename matching logic"
 - Test: `tests/unit/components/button.test.tsx`
 
 **Interfaces:**
-- Produces: `Icon({ name, size }: { name: string; size?: number })`, `Button({ variant, size, block, type, onClick, children }: ButtonProps)`, `IconButton({ icon, label, size, variant, onClick }: IconButtonProps)` — used by every page component from Task 12 onward.
+- Produces: `Icon({ name, size }: { name: string; size?: number })`, `Button({ variant, size, block, type, onClick, children }: ButtonProps)`, `IconButton({ icon, label, size, variant, type, onClick }: IconButtonProps)` — used by every page component from Task 12 onward. `IconButton`'s `type` defaults to `'button'` with a required `onClick`; passing `type="submit"` (Task 23's delete-in-a-form use case) makes `onClick` optional, since form submission itself triggers the action.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1134,14 +1134,15 @@ export interface IconButtonProps {
   label: string;
   size?: ButtonSize;
   variant?: ButtonVariant;
+  type?: 'button' | 'submit';
   onClick?: () => void;
 }
 
-export function IconButton({ icon, label, size = 'md', variant = 'ghost', onClick }: IconButtonProps) {
+export function IconButton({ icon, label, size = 'md', variant = 'ghost', type = 'button', onClick }: IconButtonProps) {
   const dimension = size === 'sm' ? 32 : size === 'lg' ? 50 : 40;
   return (
     <button
-      type="button"
+      type={type}
       aria-label={label}
       title={label}
       onClick={onClick}
@@ -2546,7 +2547,7 @@ git commit -m "feat: add Vercel Blob client-upload route"
 
 **Interfaces:**
 - Consumes: `extractNomorPrefix`, `parseManifestCsv`, `matchFilenameToCandidate`, `MatchCandidate` from `src/lib/zip-match.ts` (Task 7); `db`, `sertifikat` from `src/db` (Task 3).
-- Produces: `POST /api/admin/import/zip` accepting `{ blobUrl: string }`, returning `{ matched: number; unmatched: { filename: string }[] }` — consumed by the Unggah tab (Task 22).
+- Produces: `POST /api/admin/import/zip` accepting `{ blobUrl: string }`, returning `{ matched: number; unmatched: { filename: string; blobUrl: string; fileSize: number }[] }` — an unmatched PDF is still uploaded to Blob (under an `unmatched/` prefix) so Task 21's manual-match endpoint has a URL to attach; only the matched count updates a `sertifikat` row directly. Consumed by the Unggah tab (Task 22).
 
 - [ ] **Step 1: Build the test fixture**
 
@@ -2619,7 +2620,10 @@ describe('ZIP import route', () => {
     const body = await response.json();
 
     expect(body.matched).toBe(1);
-    expect(body.unmatched).toEqual([{ filename: 'unrelated-file.pdf' }]);
+    expect(body.unmatched).toHaveLength(1);
+    expect(body.unmatched[0].filename).toBe('unrelated-file.pdf');
+    expect(body.unmatched[0].blobUrl).toMatch(/^https:\/\//);
+    expect(body.unmatched[0].fileSize).toBeGreaterThan(0);
 
     const [row] = await db.select().from(sertifikat).where(eq(sertifikat.id, certId));
     expect(row.status).toBe('siap');
@@ -2683,7 +2687,7 @@ export async function POST(request: Request) {
     })
     .promise();
 
-  const unmatched: { filename: string }[] = [];
+  const unmatched: { filename: string; blobUrl: string; fileSize: number }[] = [];
   let matched = 0;
 
   for (const pdf of pdfEntries) {
@@ -2700,7 +2704,12 @@ export async function POST(request: Request) {
     }
 
     if (targetId === null) {
-      unmatched.push({ filename: pdf.filename });
+      const blob = await put(`unmatched/${pdf.filename}`, pdf.buffer, {
+        access: 'public',
+        addRandomSuffix: true,
+        contentType: 'application/pdf',
+      });
+      unmatched.push({ filename: pdf.filename, blobUrl: blob.url, fileSize: pdf.buffer.byteLength });
       continue;
     }
 
@@ -2746,7 +2755,7 @@ git commit -m "feat: add ZIP certificate import route with manifest/filename mat
 
 **Interfaces:**
 - Consumes: `db`, `sertifikat` from `src/db` (Task 3).
-- Produces: `POST /api/admin/import/match` accepting `{ sertifikatId: number; blobUrl: string; fileSize: number }` — consumed by the "Cocokkan" action in the Unggah tab (Task 22).
+- Produces: `POST /api/admin/import/match` accepting `{ nomor: string; blobUrl: string; fileSize: number }` — matches by `sertifikat.nomor` (globally unique, per the Task 3 schema) rather than a numeric id, because the admin knows the certificate number from context and this keeps the Unggah tab (Task 22) independent of the Penerima table (Task 23), which the plan builds later. Consumed by the "Cocokkan" action in the Unggah tab (Task 22).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -2775,10 +2784,10 @@ describe('manual match route', () => {
     await db.delete(kegiatan).where(eq(kegiatan.id, kegiatanId));
   });
 
-  it('assigns a blob URL to the chosen sertifikat and marks it siap', async () => {
+  it('assigns a blob URL to the sertifikat matching the given nomor and marks it siap', async () => {
     const request = new Request('http://localhost/api/admin/import/match', {
       method: 'POST',
-      body: JSON.stringify({ sertifikatId: certId, blobUrl: 'https://example.com/manual.pdf', fileSize: 1024 }),
+      body: JSON.stringify({ nomor: 'SK-TEST-2/UJI/2026', blobUrl: 'https://example.com/manual.pdf', fileSize: 1024 }),
     });
     const response = await POST(request);
     expect(response.status).toBe(200);
@@ -2786,6 +2795,15 @@ describe('manual match route', () => {
     const [row] = await db.select().from(sertifikat).where(eq(sertifikat.id, certId));
     expect(row.status).toBe('siap');
     expect(row.fileUrl).toBe('https://example.com/manual.pdf');
+  });
+
+  it('returns 404 when no sertifikat matches the given nomor', async () => {
+    const request = new Request('http://localhost/api/admin/import/match', {
+      method: 'POST',
+      body: JSON.stringify({ nomor: 'NOMOR-TIDAK-ADA', blobUrl: 'https://example.com/manual.pdf', fileSize: 1024 }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(404);
   });
 });
 ```
@@ -2804,16 +2822,21 @@ import { db } from '@/db';
 import { sertifikat } from '@/db/schema';
 
 export async function POST(request: Request) {
-  const { sertifikatId, blobUrl, fileSize } = (await request.json()) as {
-    sertifikatId: number;
+  const { nomor, blobUrl, fileSize } = (await request.json()) as {
+    nomor: string;
     blobUrl: string;
     fileSize: number;
   };
 
+  const [existing] = await db.select().from(sertifikat).where(eq(sertifikat.nomor, nomor));
+  if (!existing) {
+    return NextResponse.json({ error: `Tidak ada sertifikat dengan nomor ${nomor}` }, { status: 404 });
+  }
+
   await db
     .update(sertifikat)
     .set({ fileUrl: blobUrl, fileSize, status: 'siap', updatedAt: new Date() })
-    .where(eq(sertifikat.id, sertifikatId));
+    .where(eq(sertifikat.id, existing.id));
 
   return NextResponse.json({ ok: true });
 }
@@ -2850,10 +2873,16 @@ import { useState } from 'react';
 import { upload } from '@vercel/blob/client';
 import { Button } from '@/components/ui/Button';
 
+interface UnmatchedFile {
+  filename: string;
+  blobUrl: string;
+  fileSize: number;
+}
+
 export function UploadTab() {
   const [csvNote, setCsvNote] = useState<string | null>(null);
   const [zipStatus, setZipStatus] = useState<string | null>(null);
-  const [unmatched, setUnmatched] = useState<{ filename: string }[]>([]);
+  const [unmatched, setUnmatched] = useState<UnmatchedFile[]>([]);
 
   async function handleCsvFile(file: File) {
     const csv = await file.text();
@@ -2882,6 +2911,23 @@ export function UploadTab() {
     setUnmatched(body.unmatched);
   }
 
+  async function handleCocokkan(file: UnmatchedFile) {
+    const nomor = window.prompt(`Masukkan nomor sertifikat untuk berkas "${file.filename}":`);
+    if (!nomor) return;
+
+    const response = await fetch('/api/admin/import/match', {
+      method: 'POST',
+      body: JSON.stringify({ nomor, blobUrl: file.blobUrl, fileSize: file.fileSize }),
+    });
+
+    if (!response.ok) {
+      window.alert(`Nomor "${nomor}" tidak ditemukan.`);
+      return;
+    }
+
+    setUnmatched((prev) => prev.filter((u) => u.filename !== file.filename));
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 18 }}>
       <div style={{ padding: '20px 24px', borderRadius: 'var(--radius-xl)', background: 'var(--glass-regular)', border: '1px solid var(--glass-border)' }}>
@@ -2899,7 +2945,7 @@ export function UploadTab() {
             {unmatched.map((u) => (
               <div key={u.filename} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-subtle)' }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>{u.filename}</span>
-                <Button variant="ghost" size="sm">Cocokkan</Button>
+                <Button variant="ghost" size="sm" onClick={() => handleCocokkan(u)}>Cocokkan</Button>
               </div>
             ))}
           </div>
@@ -2910,12 +2956,10 @@ export function UploadTab() {
 }
 ```
 
-Note: the "Cocokkan" button above is left as a manual-review list entry point without a fully wired picker dialog — wiring it to `POST /api/admin/import/match` (choosing a target `sertifikatId` from the Penerima table) is a small follow-up once Task 23's Penerima table exists to pick from; this task's tested deliverable is the CSV import + ZIP import + unmatched-list display, all of which are fully functional now.
-
 - [ ] **Step 2: Verify manually**
 
 Run: `npm run dev`, log in as admin, and (once Task 25 wires this component into `/admin`) upload the CSV sample from the spec and a ZIP built the same way as Task 20's fixture.
-Expected: CSV note and ZIP status update; matched certificates move to `siap`.
+Expected: CSV note and ZIP status update; matched certificates move to `siap`; for an unmatched file, clicking "Cocokkan" and entering the right `nomor` removes it from the unmatched list and marks that certificate `siap`.
 
 - [ ] **Step 3: Commit**
 
@@ -2931,12 +2975,12 @@ git commit -m "feat: add admin Unggah tab UI"
 ### Task 23: Penerima (recipients) table
 
 **Files:**
-- Create: `src/app/api/admin/sertifikat/[id]/route.ts`, `src/components/admin/PenerimaTable.tsx`
+- Create: `src/app/api/admin/sertifikat/[id]/route.ts`, `src/app/admin/actions.ts`, `src/components/admin/PenerimaTable.tsx`
 - Test: `tests/integration/sertifikat-delete.test.ts`
 
 **Interfaces:**
-- Consumes: `db`, `sertifikat`, `kegiatan` from `src/db` (Task 3); `del` from `@vercel/blob`; `maskNik` from `src/lib/nik.ts`; `Badge`, `IconButton` from `src/components/ui/*`.
-- Produces: `getAllSertifikat(filter: { q?: string }): Promise<AdminSertifikatRow[]>` added to `src/lib/search.ts`, `interface AdminSertifikatRow { id: number; nama: string; nik: string; nomor: string; kegiatanNama: string; tanggalTerbit: string; status: 'siap' | 'belum'; unduhCount: number }`; `DELETE /api/admin/sertifikat/[id]`.
+- Consumes: `db`, `sertifikat`, `kegiatan` from `src/db` (Task 3); `del` from `@vercel/blob`; `maskNik` from `src/lib/nik.ts`; `Badge`, `IconButton` from `src/components/ui/*` (Task 8's `IconButton` accepts `type="submit"` for exactly this form-driven case).
+- Produces: `getAllSertifikat(filter: { q?: string }): Promise<AdminSertifikatRow[]>` and `deleteSertifikat(id: number): Promise<void>` added to `src/lib/search.ts`, `interface AdminSertifikatRow { id: number; nama: string; nik: string; nomor: string; kegiatanNama: string; tanggalTerbit: string; status: 'siap' | 'belum'; unduhCount: number }`; `DELETE /api/admin/sertifikat/[id]`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -2981,41 +3025,45 @@ describe('DELETE /api/admin/sertifikat/[id]', () => {
 Run: `npm run test -- tests/integration/sertifikat-delete.test.ts`
 Expected: FAIL with "Cannot find module '@/app/api/admin/sertifikat/[id]/route'".
 
-- [ ] **Step 3: Write `src/app/api/admin/sertifikat/[id]/route.ts`**
-
-```ts
-import { NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
-import { del } from '@vercel/blob';
-import { db } from '@/db';
-import { sertifikat } from '@/db/schema';
-
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const certId = Number(id);
-
-  const [row] = await db.select().from(sertifikat).where(eq(sertifikat.id, certId));
-  if (row?.fileUrl) {
-    await del(row.fileUrl).catch(() => undefined);
-  }
-
-  await db.delete(sertifikat).where(eq(sertifikat.id, certId));
-  return NextResponse.json({ ok: true });
-}
-```
-
-- [ ] **Step 4: Run test to verify it passes**
-
-Run: `npm run test -- tests/integration/sertifikat-delete.test.ts`
-Expected: PASS.
-
-- [ ] **Step 5: Add `getAllSertifikat` to `src/lib/search.ts`**
+- [ ] **Step 3: Add `deleteSertifikat` to `src/lib/search.ts`**
 
 Append:
 
 ```ts
-import { or, desc } from 'drizzle-orm';
+import { del } from '@vercel/blob';
 
+export async function deleteSertifikat(id: number): Promise<void> {
+  const [row] = await db.select().from(sertifikat).where(eq(sertifikat.id, id));
+  if (row?.fileUrl) {
+    await del(row.fileUrl).catch(() => undefined);
+  }
+  await db.delete(sertifikat).where(eq(sertifikat.id, id));
+}
+```
+
+- [ ] **Step 4: Write `src/app/api/admin/sertifikat/[id]/route.ts`**
+
+```ts
+import { NextResponse } from 'next/server';
+import { deleteSertifikat } from '@/lib/search';
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  await deleteSertifikat(Number(id));
+  return NextResponse.json({ ok: true });
+}
+```
+
+- [ ] **Step 5: Run test to verify it passes**
+
+Run: `npm run test -- tests/integration/sertifikat-delete.test.ts`
+Expected: PASS.
+
+- [ ] **Step 6: Add `getAllSertifikat` to `src/lib/search.ts`**
+
+Append the function below, and merge `or, desc` into the file's existing top-of-file `import { eq, ilike } from 'drizzle-orm';` line (from Task 11) instead of adding a second `drizzle-orm` import statement:
+
+```ts
 export interface AdminSertifikatRow {
   id: number;
   nama: string;
@@ -3048,13 +3096,29 @@ export async function getAllSertifikat(filter: { q?: string } = {}): Promise<Adm
 }
 ```
 
-- [ ] **Step 6: Write `src/components/admin/PenerimaTable.tsx`**
+- [ ] **Step 7: Write `src/app/admin/actions.ts`** (a real Server Action the table's delete form posts to — a route handler can't be a `<form action={...}>` target directly from a Server Component the way a Server Action can, and `deleteSertifikat` already carries the Blob cleanup so this and the route handler from Step 4 both call the same logic)
+
+```ts
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { deleteSertifikat } from '@/lib/search';
+
+export async function deleteSertifikatAction(formData: FormData): Promise<void> {
+  const id = Number(formData.get('id'));
+  await deleteSertifikat(id);
+  revalidatePath('/admin');
+}
+```
+
+- [ ] **Step 8: Write `src/components/admin/PenerimaTable.tsx`**
 
 ```tsx
 import { getAllSertifikat } from '@/lib/search';
 import { maskNik } from '@/lib/nik';
 import { Badge } from '@/components/ui/Badge';
 import { IconButton } from '@/components/ui/IconButton';
+import { deleteSertifikatAction } from '@/app/admin/actions';
 
 export async function PenerimaTable({ q }: { q?: string }) {
   const rows = await getAllSertifikat({ q });
@@ -3080,14 +3144,9 @@ export async function PenerimaTable({ q }: { q?: string }) {
               <Badge variant={r.status === 'siap' ? 'success' : 'warning'}>{r.status === 'siap' ? 'Siap' : 'Belum'}</Badge>
             </td>
             <td style={{ padding: 11 }}>
-              <form action={`/api/admin/sertifikat/${r.id}`} method="post">
-                <IconButton icon="trash-2" label="Hapus berkas" onClick={async () => {
-                  'use server';
-                  const { db } = await import('@/db');
-                  const { sertifikat } = await import('@/db/schema');
-                  const { eq } = await import('drizzle-orm');
-                  await db.delete(sertifikat).where(eq(sertifikat.id, r.id));
-                }} />
+              <form action={deleteSertifikatAction}>
+                <input type="hidden" name="id" value={r.id} />
+                <IconButton icon="trash-2" label="Hapus berkas" type="submit" />
               </form>
             </td>
           </tr>
@@ -3098,9 +3157,7 @@ export async function PenerimaTable({ q }: { q?: string }) {
 }
 ```
 
-Note: the inline server action above duplicates the delete logic from Task 23's route handler rather than calling it, because a server component's inline action can't issue an HTTP DELETE to its own route handler — this is intentional, not an oversight; both paths delete the same row, and the Blob cleanup from the route handler should be pulled into a shared `deleteSertifikat(id)` helper in `src/lib/search.ts` if this duplication becomes a maintenance problem later.
-
-- [ ] **Step 7: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
 git add -A
