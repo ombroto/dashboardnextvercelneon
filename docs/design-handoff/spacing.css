@@ -1,0 +1,11 @@
+/* ============================================================
+   UT GLASS DESIGN SYSTEM
+   Universitas Terbuka · Direktorat Sistem Informasi
+   Single entry point — consumers link only this file.
+   Import order matters: fonts → colors → type → spacing → glass.
+   ============================================================ */
+@import url('./tokens/fonts.css');
+@import url('./tokens/colors.css');
+@import url('./tokens/typography.css');
+@import url('./tokens/spacing.css');
+@import url('./tokens/glass.css');

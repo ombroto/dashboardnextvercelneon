@@ -1,0 +1,1746 @@
+/* @ds-bundle: {"format":3,"namespace":"UTGlassDesignSystem_125d14","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"IconButton","sourcePath":"components/actions/IconButton.jsx"},{"name":"SegmentedControl","sourcePath":"components/actions/SegmentedControl.jsx"},{"name":"Avatar","sourcePath":"components/data-display/Avatar.jsx"},{"name":"Badge","sourcePath":"components/data-display/Badge.jsx"},{"name":"Card","sourcePath":"components/data-display/Card.jsx"},{"name":"Dialog","sourcePath":"components/feedback/Dialog.jsx"},{"name":"Toast","sourcePath":"components/feedback/Toast.jsx"},{"name":"Tooltip","sourcePath":"components/feedback/Tooltip.jsx"},{"name":"Input","sourcePath":"components/forms/Input.jsx"},{"name":"Switch","sourcePath":"components/forms/Switch.jsx"},{"name":"Icon","sourcePath":"components/icon/Icon.jsx"},{"name":"Tabs","sourcePath":"components/navigation/Tabs.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"c947e83ec2c7","components/actions/IconButton.jsx":"985da8996413","components/actions/SegmentedControl.jsx":"c4de53e32f03","components/data-display/Avatar.jsx":"94a8e54df197","components/data-display/Badge.jsx":"4650a6f19df0","components/data-display/Card.jsx":"3be47fae6b2a","components/feedback/Dialog.jsx":"039227d85195","components/feedback/Toast.jsx":"31d6e0414d77","components/feedback/Tooltip.jsx":"8c75ecc23d3d","components/forms/Input.jsx":"82071f898c3b","components/forms/Switch.jsx":"946b7f30756f","components/icon/Icon.jsx":"21de22d3bae6","components/navigation/Tabs.jsx":"a77416f67cd9","ui_kits/ut-portal/App.jsx":"bf7460057052","ui_kits/ut-portal/Login.jsx":"3909c54f50d9","ui_kits/ut-portal/Screens.jsx":"79fdef241f72","ui_kits/ut-portal/Shell.jsx":"07ebac473946","ui_kits/ut-portal/data.js":"eb1037f2c927"},"inlinedExternals":[],"unexposedExports":[]} */
+
+(() => {
+
+const __ds_ns = (window.UTGlassDesignSystem_125d14 = window.UTGlassDesignSystem_125d14 || {});
+
+const __ds_scope = {};
+
+(__ds_ns.__errors = __ds_ns.__errors || []);
+
+// components/actions/Button.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-btn {
+  --_pad-x: 18px; --_h: var(--control-md); --_fs: var(--text-base);
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: var(--_h); padding: 0 var(--_pad-x);
+  font-family: var(--font-sans); font-size: var(--_fs); font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-normal); line-height: 1; white-space: nowrap;
+  border-radius: var(--radius-pill); border: 1px solid transparent; cursor: pointer;
+  text-decoration: none; box-sizing: border-box; position: relative; isolation: isolate;
+  transition: transform var(--dur-fast) var(--ease-out), background var(--dur-base) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+.utg-btn:active { transform: scale(0.97); }
+.utg-btn:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--focus-ring); }
+.utg-btn[disabled] { opacity: 0.45; pointer-events: none; }
+.utg-btn--sm { --_h: var(--control-sm); --_pad-x: 14px; --_fs: var(--text-sm); }
+.utg-btn--lg { --_h: var(--control-lg); --_pad-x: 26px; --_fs: var(--text-md); }
+.utg-btn--block { display: flex; width: 100%; }
+
+/* Primary — solid UT blue with glass edge highlight */
+.utg-btn--primary {
+  background: linear-gradient(180deg, var(--ut-blue-500), var(--ut-blue-700));
+  color: var(--text-on-brand);
+  box-shadow: var(--shadow-sm), var(--glass-edge-top);
+}
+.utg-btn--primary:hover { background: linear-gradient(180deg, var(--ut-blue-600), var(--ut-blue-800)); box-shadow: var(--shadow-md), var(--glass-edge-top); }
+
+/* Gold */
+.utg-btn--gold {
+  background: linear-gradient(180deg, var(--ut-gold-400), var(--ut-gold-600));
+  color: var(--text-on-gold); box-shadow: var(--shadow-sm), var(--glass-edge-top);
+}
+.utg-btn--gold:hover { background: linear-gradient(180deg, var(--ut-gold-500), var(--ut-gold-700)); }
+
+/* Glass — the signature frosted button */
+.utg-btn--glass {
+  background: var(--glass-thick); color: var(--ink-900);
+  border-color: var(--glass-border);
+  -webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  box-shadow: var(--shadow-sm), var(--glass-edge-top);
+}
+.utg-btn--glass:hover { background: rgba(255,255,255,0.92); }
+
+/* Ghost */
+.utg-btn--ghost { background: transparent; color: var(--ut-blue-600); }
+.utg-btn--ghost:hover { background: var(--ut-blue-50); }
+
+/* Danger */
+.utg-btn--danger {
+  background: linear-gradient(180deg, var(--color-danger-soft), var(--color-danger));
+  color: #fff; box-shadow: var(--shadow-sm), var(--glass-edge-top);
+}
+.utg-btn--danger:hover { filter: brightness(0.96); }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-btn-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function Button({
+  variant = 'primary',
+  size = 'md',
+  block = false,
+  disabled = false,
+  leadingIcon,
+  trailingIcon,
+  as = 'button',
+  className = '',
+  children,
+  ...rest
+}) {
+  useCSS();
+  const Tag = as;
+  const cls = ['utg-btn', `utg-btn--${variant}`, size !== 'md' && `utg-btn--${size}`, block && 'utg-btn--block', className].filter(Boolean).join(' ');
+  return /*#__PURE__*/React.createElement(Tag, _extends({
+    className: cls,
+    disabled: Tag === 'button' ? disabled : undefined
+  }, rest), leadingIcon != null && /*#__PURE__*/React.createElement("span", {
+    className: "utg-btn__icon",
+    "aria-hidden": "true"
+  }, leadingIcon), children, trailingIcon != null && /*#__PURE__*/React.createElement("span", {
+    className: "utg-btn__icon",
+    "aria-hidden": "true"
+  }, trailingIcon));
+}
+Object.assign(__ds_scope, { Button });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/actions/Button.jsx", error: String((e && e.message) || e) }); }
+
+// components/actions/SegmentedControl.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-seg {
+  display: inline-flex; align-items: center; gap: 2px; padding: 3px;
+  background: var(--glass-thin); border: 1px solid var(--glass-border-soft);
+  border-radius: var(--radius-pill); box-shadow: inset 0 1px 2px rgba(11,22,38,0.06);
+  -webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  position: relative; box-sizing: border-box;
+}
+.utg-seg__opt {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--weight-medium);
+  color: var(--ink-600); padding: 6px 16px; border-radius: var(--radius-pill);
+  position: relative; z-index: 1; white-space: nowrap; line-height: 1;
+  transition: color var(--dur-base) var(--ease-out);
+}
+.utg-seg__opt:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--focus-ring); }
+.utg-seg__opt[aria-selected="true"] { color: var(--ut-blue-700); font-weight: var(--weight-semibold); }
+.utg-seg__thumb {
+  position: absolute; top: 3px; bottom: 3px; z-index: 0;
+  background: #fff; border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm), var(--glass-edge-top);
+  transition: left var(--dur-base) var(--ease-spring), width var(--dur-base) var(--ease-spring);
+}
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-seg-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function SegmentedControl({
+  options = [],
+  value,
+  defaultValue,
+  onChange,
+  className = '',
+  ...rest
+}) {
+  useCSS();
+  const opts = options.map(o => typeof o === 'string' ? {
+    label: o,
+    value: o
+  } : o);
+  const isControlled = value !== undefined;
+  const [internal, setInternal] = React.useState(defaultValue ?? (opts[0] && opts[0].value));
+  const current = isControlled ? value : internal;
+  const wrapRef = React.useRef(null);
+  const [thumb, setThumb] = React.useState({
+    left: 3,
+    width: 0
+  });
+  const selIndex = Math.max(0, opts.findIndex(o => o.value === current));
+  React.useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const btn = wrap.querySelectorAll('.utg-seg__opt')[selIndex];
+    if (btn) setThumb({
+      left: btn.offsetLeft,
+      width: btn.offsetWidth
+    });
+  }, [selIndex, opts.length]);
+  function pick(v) {
+    if (!isControlled) setInternal(v);
+    onChange && onChange(v);
+  }
+  return /*#__PURE__*/React.createElement("div", _extends({
+    className: ('utg-seg ' + className).trim(),
+    ref: wrapRef,
+    role: "tablist"
+  }, rest), /*#__PURE__*/React.createElement("span", {
+    className: "utg-seg__thumb",
+    style: {
+      left: thumb.left,
+      width: thumb.width
+    }
+  }), opts.map(o => /*#__PURE__*/React.createElement("button", {
+    key: o.value,
+    type: "button",
+    role: "tab",
+    className: "utg-seg__opt",
+    "aria-selected": o.value === current,
+    onClick: () => pick(o.value)
+  }, o.label)));
+}
+Object.assign(__ds_scope, { SegmentedControl });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/actions/SegmentedControl.jsx", error: String((e && e.message) || e) }); }
+
+// components/data-display/Avatar.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-avatar {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; overflow: visible; flex: none; box-sizing: border-box;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); color: #fff;
+  background: linear-gradient(150deg, var(--ut-blue-400), var(--ut-blue-700));
+  box-shadow: var(--glass-edge-top), 0 0 0 1px rgba(11,22,38,0.04);
+  user-select: none;
+}
+.utg-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.utg-avatar__ring { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--ut-blue-500); }
+.utg-avatar__status {
+  position: absolute; right: -1px; bottom: -1px; width: 28%; height: 28%; min-width: 8px; min-height: 8px;
+  border-radius: 50%; border: 2px solid #fff; box-sizing: border-box;
+}
+.utg-avatar__status--online { background: var(--ut-green); }
+.utg-avatar__status--busy   { background: var(--color-danger); }
+.utg-avatar__status--away   { background: var(--ut-gold-500); }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-avatar-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function initials(name) {
+  if (!name) return '';
+  const parts = String(name).trim().split(/\s+/);
+  return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+}
+function Avatar({
+  name,
+  src,
+  size = 40,
+  status,
+  ring = false,
+  className = '',
+  style,
+  ...rest
+}) {
+  useCSS();
+  const cls = ['utg-avatar', ring && 'utg-avatar__ring', className].filter(Boolean).join(' ');
+  return /*#__PURE__*/React.createElement("span", _extends({
+    className: cls,
+    style: {
+      width: size,
+      height: size,
+      fontSize: Math.round(size * 0.4),
+      ...style
+    }
+  }, rest), src ? /*#__PURE__*/React.createElement("img", {
+    src: src,
+    alt: name || ''
+  }) : initials(name), status && /*#__PURE__*/React.createElement("span", {
+    className: `utg-avatar__status utg-avatar__status--${status}`
+  }));
+}
+Object.assign(__ds_scope, { Avatar });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/data-display/Avatar.jsx", error: String((e && e.message) || e) }); }
+
+// components/data-display/Badge.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-badge {
+  display: inline-flex; align-items: center; gap: 5px; box-sizing: border-box;
+  font-family: var(--font-sans); font-size: var(--text-xs); font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-normal); line-height: 1; white-space: nowrap;
+  padding: 4px 10px; border-radius: var(--radius-pill); border: 1px solid transparent;
+}
+.utg-badge--sm { font-size: var(--text-2xs); padding: 3px 8px; }
+.utg-badge__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.utg-badge--neutral { background: rgba(11,22,38,0.06); color: var(--ink-700); }
+.utg-badge--brand   { background: var(--ut-blue-50); color: var(--ut-blue-700); border-color: rgba(0,74,147,0.12); }
+.utg-badge--gold    { background: var(--ut-gold-100); color: var(--ut-gold-700); border-color: rgba(211,161,6,0.18); }
+.utg-badge--success { background: rgba(18,161,80,0.12); color: #0d7a3d; }
+.utg-badge--warning { background: rgba(243,146,0,0.14); color: #b56a00; }
+.utg-badge--danger  { background: rgba(224,50,46,0.12); color: #b71f1b; }
+.utg-badge--solid   { background: var(--ut-blue-600); color: #fff; box-shadow: var(--glass-edge-top); }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-badge-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function Badge({
+  variant = 'neutral',
+  size = 'md',
+  dot = false,
+  className = '',
+  children,
+  ...rest
+}) {
+  useCSS();
+  const cls = ['utg-badge', `utg-badge--${variant}`, size !== 'md' && `utg-badge--${size}`, className].filter(Boolean).join(' ');
+  return /*#__PURE__*/React.createElement("span", _extends({
+    className: cls
+  }, rest), dot && /*#__PURE__*/React.createElement("span", {
+    className: "utg-badge__dot"
+  }), children);
+}
+Object.assign(__ds_scope, { Badge });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/data-display/Badge.jsx", error: String((e && e.message) || e) }); }
+
+// components/data-display/Card.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-card {
+  position: relative; border-radius: var(--radius-xl); box-sizing: border-box;
+  padding: var(--space-6); color: var(--text-primary);
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+}
+.utg-card--glass {
+  background: var(--glass-regular); border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+}
+.utg-card--solid { background: #fff; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-md); }
+.utg-card--blue { background: var(--glass-blue-strong); color: #fff; border: 1px solid rgba(255,255,255,0.16); box-shadow: var(--glass-shadow); }
+.utg-card--outline { background: rgba(255,255,255,0.4); border: 1px solid var(--border-default); box-shadow: none;
+  -webkit-backdrop-filter: blur(var(--glass-blur-xs)); backdrop-filter: blur(var(--glass-blur-xs)); }
+.utg-card--interactive { cursor: pointer; }
+.utg-card--interactive:hover { transform: translateY(-2px); box-shadow: var(--shadow-xl), var(--glass-edge-top); }
+.utg-card--interactive:active { transform: translateY(0); }
+.utg-card__head { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); }
+.utg-card__title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-tight); margin: 0; }
+.utg-card__sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 2px 0 0; }
+.utg-card--blue .utg-card__sub { color: rgba(255,255,255,0.7); }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-card-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function Card({
+  variant = 'glass',
+  interactive = false,
+  title,
+  subtitle,
+  action,
+  padding,
+  className = '',
+  style,
+  children,
+  ...rest
+}) {
+  useCSS();
+  const cls = ['utg-card', `utg-card--${variant}`, interactive && 'utg-card--interactive', className].filter(Boolean).join(' ');
+  const st = padding != null ? {
+    padding,
+    ...style
+  } : style;
+  const hasHead = title != null || action != null;
+  return /*#__PURE__*/React.createElement("div", _extends({
+    className: cls,
+    style: st
+  }, rest), hasHead && /*#__PURE__*/React.createElement("div", {
+    className: "utg-card__head"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, title != null && /*#__PURE__*/React.createElement("h3", {
+    className: "utg-card__title"
+  }, title), subtitle != null && /*#__PURE__*/React.createElement("p", {
+    className: "utg-card__sub"
+  }, subtitle)), action), children);
+}
+Object.assign(__ds_scope, { Card });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/data-display/Card.jsx", error: String((e && e.message) || e) }); }
+
+// components/feedback/Tooltip.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-tip-wrap { position: relative; display: inline-flex; }
+.utg-tip {
+  position: absolute; z-index: 900; pointer-events: none; white-space: nowrap;
+  padding: 6px 10px; border-radius: var(--radius-sm); font-family: var(--font-sans);
+  font-size: var(--text-xs); font-weight: var(--weight-medium); color: #fff;
+  background: var(--glass-dark); border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: var(--shadow-md), var(--glass-edge-top);
+  -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturate));
+  opacity: 0; transform: translateY(2px); transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.utg-tip-wrap:hover .utg-tip, .utg-tip-wrap:focus-within .utg-tip { opacity: 1; transform: none; }
+.utg-tip--top    { bottom: calc(100% + 8px); left: 50%; transform: translate(-50%, 2px); }
+.utg-tip-wrap:hover .utg-tip--top, .utg-tip-wrap:focus-within .utg-tip--top { transform: translate(-50%, 0); }
+.utg-tip--bottom { top: calc(100% + 8px); left: 50%; transform: translate(-50%, -2px); }
+.utg-tip-wrap:hover .utg-tip--bottom, .utg-tip-wrap:focus-within .utg-tip--bottom { transform: translate(-50%, 0); }
+.utg-tip--right  { left: calc(100% + 8px); top: 50%; transform: translate(-2px, -50%); }
+.utg-tip-wrap:hover .utg-tip--right, .utg-tip-wrap:focus-within .utg-tip--right { transform: translate(0, -50%); }
+.utg-tip--left   { right: calc(100% + 8px); top: 50%; transform: translate(2px, -50%); }
+.utg-tip-wrap:hover .utg-tip--left, .utg-tip-wrap:focus-within .utg-tip--left { transform: translate(0, -50%); }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-tip-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function Tooltip({
+  label,
+  placement = 'top',
+  className = '',
+  children,
+  ...rest
+}) {
+  useCSS();
+  return /*#__PURE__*/React.createElement("span", _extends({
+    className: ('utg-tip-wrap ' + className).trim()
+  }, rest), children, /*#__PURE__*/React.createElement("span", {
+    className: `utg-tip utg-tip--${placement}`,
+    role: "tooltip"
+  }, label));
+}
+Object.assign(__ds_scope, { Tooltip });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/feedback/Tooltip.jsx", error: String((e && e.message) || e) }); }
+
+// components/forms/Switch.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-switch {
+  position: relative; display: inline-flex; align-items: center; flex: none;
+  width: 52px; height: 32px; border-radius: var(--radius-pill); cursor: pointer;
+  background: rgba(11,22,38,0.16); border: 1px solid rgba(11,22,38,0.06);
+  box-shadow: inset 0 1px 3px rgba(11,22,38,0.12); padding: 0; box-sizing: border-box;
+  transition: background var(--dur-base) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.utg-switch--sm { width: 42px; height: 26px; }
+.utg-switch[aria-checked="true"] {
+  background: linear-gradient(180deg, var(--ut-green-soft), var(--ut-green));
+  border-color: rgba(0,0,0,0.05);
+}
+.utg-switch:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--focus-ring), inset 0 1px 3px rgba(11,22,38,0.12); }
+.utg-switch[disabled] { opacity: 0.45; pointer-events: none; }
+.utg-switch__knob {
+  position: absolute; top: 50%; left: 2px; transform: translateY(-50%);
+  width: 26px; height: 26px; border-radius: 50%; background: #fff;
+  box-shadow: 0 2px 5px rgba(11,22,38,0.28), var(--glass-edge-top);
+  transition: left var(--dur-base) var(--ease-spring);
+}
+.utg-switch--sm .utg-switch__knob { width: 20px; height: 20px; }
+.utg-switch[aria-checked="true"] .utg-switch__knob { left: calc(100% - 28px); }
+.utg-switch--sm[aria-checked="true"] .utg-switch__knob { left: calc(100% - 22px); }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-switch-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function Switch({
+  checked,
+  defaultChecked = false,
+  onChange,
+  size = 'md',
+  disabled = false,
+  className = '',
+  label,
+  ...rest
+}) {
+  useCSS();
+  const isControlled = checked !== undefined;
+  const [on, setOn] = React.useState(defaultChecked);
+  const value = isControlled ? checked : on;
+  function toggle() {
+    const next = !value;
+    if (!isControlled) setOn(next);
+    onChange && onChange(next);
+  }
+  const cls = ['utg-switch', size !== 'md' && `utg-switch--${size}`, className].filter(Boolean).join(' ');
+  return /*#__PURE__*/React.createElement("button", _extends({
+    type: "button",
+    role: "switch",
+    "aria-checked": value,
+    "aria-label": label,
+    disabled: disabled,
+    className: cls,
+    onClick: toggle
+  }, rest), /*#__PURE__*/React.createElement("span", {
+    className: "utg-switch__knob"
+  }));
+}
+Object.assign(__ds_scope, { Switch });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/forms/Switch.jsx", error: String((e && e.message) || e) }); }
+
+// components/icon/Icon.jsx
+try { (() => {
+/* Renders a Lucide glyph from the global UMD build (window.lucide).
+   Load it once per page:
+   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+   Lucide is our documented free stand-in for Apple's SF Symbols. */
+
+function toPascal(name) {
+  return String(name).replace(/(^|-)([a-z0-9])/g, (_, __, c) => c.toUpperCase());
+}
+function Icon({
+  name,
+  size = 20,
+  strokeWidth = 2,
+  color = 'currentColor',
+  className = '',
+  style,
+  ...rest
+}) {
+  const root = typeof window !== 'undefined' && window.lucide || {};
+  const lib = root.icons || root;
+  const node = lib[toPascal(name)] || lib[name];
+  const children = Array.isArray(node) ? node.map((child, i) => {
+    const [tag, attrs] = child;
+    return React.createElement(tag, {
+      key: i,
+      ...attrs
+    });
+  }) : null;
+  return React.createElement('svg', {
+    xmlns: 'http://www.w3.org/2000/svg',
+    width: size,
+    height: size,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: color,
+    strokeWidth,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    className: ('utg-icon ' + className).trim(),
+    style: {
+      display: 'block',
+      flex: 'none',
+      ...style
+    },
+    'aria-hidden': 'true',
+    ...rest
+  }, children);
+}
+Object.assign(__ds_scope, { Icon });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/icon/Icon.jsx", error: String((e && e.message) || e) }); }
+
+// components/actions/IconButton.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-iconbtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: var(--control-md); height: var(--control-md); padding: 0;
+  border-radius: var(--radius-pill); border: 1px solid transparent; cursor: pointer;
+  color: var(--ink-700); background: transparent; box-sizing: border-box; position: relative;
+  transition: transform var(--dur-fast) var(--ease-out), background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+.utg-iconbtn:active { transform: scale(0.92); }
+.utg-iconbtn:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--focus-ring); }
+.utg-iconbtn[disabled] { opacity: 0.4; pointer-events: none; }
+.utg-iconbtn--sm { width: var(--control-sm); height: var(--control-sm); }
+.utg-iconbtn--lg { width: var(--control-lg); height: var(--control-lg); }
+
+.utg-iconbtn--ghost:hover { background: rgba(11,22,38,0.06); color: var(--ink-900); }
+.utg-iconbtn--glass {
+  background: var(--glass-thick); border-color: var(--glass-border); color: var(--ink-800);
+  -webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  box-shadow: var(--shadow-sm), var(--glass-edge-top);
+}
+.utg-iconbtn--glass:hover { background: rgba(255,255,255,0.95); }
+.utg-iconbtn--solid { background: linear-gradient(180deg, var(--ut-blue-500), var(--ut-blue-700)); color: #fff; box-shadow: var(--shadow-sm), var(--glass-edge-top); }
+.utg-iconbtn--solid:hover { background: linear-gradient(180deg, var(--ut-blue-600), var(--ut-blue-800)); }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-iconbtn-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+const SIZES = {
+  sm: 16,
+  md: 20,
+  lg: 22
+};
+function IconButton({
+  icon,
+  variant = 'ghost',
+  size = 'md',
+  label,
+  disabled = false,
+  className = '',
+  ...rest
+}) {
+  useCSS();
+  const cls = ['utg-iconbtn', `utg-iconbtn--${variant}`, size !== 'md' && `utg-iconbtn--${size}`, className].filter(Boolean).join(' ');
+  return /*#__PURE__*/React.createElement("button", _extends({
+    type: "button",
+    className: cls,
+    "aria-label": label,
+    title: label,
+    disabled: disabled
+  }, rest), /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: icon,
+    size: SIZES[size]
+  }));
+}
+Object.assign(__ds_scope, { IconButton });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/actions/IconButton.jsx", error: String((e && e.message) || e) }); }
+
+// components/feedback/Dialog.jsx
+try { (() => {
+const CSS = `
+.utg-dialog__backdrop {
+  position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center;
+  padding: 24px; background: rgba(11,22,38,0.32);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  animation: utg-dialog-fade var(--dur-base) var(--ease-out);
+}
+.utg-dialog {
+  position: relative; width: 100%; max-width: 460px; max-height: calc(100vh - 48px); overflow: auto;
+  border-radius: var(--radius-2xl); padding: var(--space-8);
+  background: var(--glass-thick); border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-xl), var(--glass-edge-top), var(--glass-edge-ring);
+  -webkit-backdrop-filter: blur(var(--glass-blur-xl)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-xl)) saturate(var(--glass-saturate));
+  font-family: var(--font-sans); color: var(--text-primary);
+  animation: utg-dialog-pop var(--dur-slow) var(--ease-spring);
+}
+.utg-dialog__close { position: absolute; top: 14px; right: 14px; }
+.utg-dialog__title { font-family: var(--font-display); font-size: var(--text-xl); font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight); margin: 0 0 6px; }
+.utg-dialog__desc { font-size: var(--text-md); line-height: var(--leading-normal); color: var(--text-secondary); margin: 0; }
+.utg-dialog__body { margin-top: var(--space-5); }
+.utg-dialog__footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: var(--space-8); }
+@keyframes utg-dialog-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes utg-dialog-pop { from { opacity: 0; transform: translateY(12px) scale(0.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .utg-dialog, .utg-dialog__backdrop { animation: none; } }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-dialog-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function Dialog({
+  open = false,
+  onClose,
+  title,
+  description,
+  footer,
+  showClose = true,
+  children
+}) {
+  useCSS();
+  React.useEffect(() => {
+    if (!open) return;
+    function onKey(e) {
+      if (e.key === 'Escape') onClose && onClose();
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+  if (!open) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "utg-dialog__backdrop",
+    onMouseDown: e => {
+      if (e.target === e.currentTarget) onClose && onClose();
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "utg-dialog",
+    role: "dialog",
+    "aria-modal": "true",
+    "aria-label": typeof title === 'string' ? title : undefined
+  }, showClose && /*#__PURE__*/React.createElement("div", {
+    className: "utg-dialog__close"
+  }, /*#__PURE__*/React.createElement(__ds_scope.IconButton, {
+    icon: "x",
+    label: "Tutup",
+    onClick: onClose
+  })), title != null && /*#__PURE__*/React.createElement("h2", {
+    className: "utg-dialog__title"
+  }, title), description != null && /*#__PURE__*/React.createElement("p", {
+    className: "utg-dialog__desc"
+  }, description), children != null && /*#__PURE__*/React.createElement("div", {
+    className: "utg-dialog__body"
+  }, children), footer != null && /*#__PURE__*/React.createElement("div", {
+    className: "utg-dialog__footer"
+  }, footer)));
+}
+Object.assign(__ds_scope, { Dialog });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/feedback/Dialog.jsx", error: String((e && e.message) || e) }); }
+
+// components/feedback/Toast.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-toast {
+  display: flex; align-items: center; gap: 12px; box-sizing: border-box;
+  min-width: 280px; max-width: 420px; padding: 13px 14px 13px 16px;
+  border-radius: var(--radius-lg); font-family: var(--font-sans);
+  background: var(--glass-thick); border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lg), var(--glass-edge-top);
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+  color: var(--text-primary);
+}
+.utg-toast__icon { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; color: #fff; }
+.utg-toast--success .utg-toast__icon { background: var(--ut-green); }
+.utg-toast--error .utg-toast__icon { background: var(--color-danger); }
+.utg-toast--info .utg-toast__icon { background: var(--ut-blue-600); }
+.utg-toast--warning .utg-toast__icon { background: var(--ut-orange); }
+.utg-toast__body { flex: 1; min-width: 0; }
+.utg-toast__title { font-size: var(--text-sm); font-weight: var(--weight-semibold); line-height: 1.3; }
+.utg-toast__msg { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.35; margin-top: 1px; }
+.utg-toast__close { appearance: none; border: 0; background: transparent; cursor: pointer; color: var(--ink-400); padding: 4px; border-radius: var(--radius-sm); flex: none; }
+.utg-toast__close:hover { color: var(--ink-700); background: rgba(11,22,38,0.05); }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-toast-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+const ICONS = {
+  success: 'check',
+  error: 'x',
+  info: 'info',
+  warning: 'triangle-alert'
+};
+function Toast({
+  variant = 'info',
+  title,
+  message,
+  onClose,
+  className = '',
+  ...rest
+}) {
+  useCSS();
+  const cls = ['utg-toast', `utg-toast--${variant}`, className].filter(Boolean).join(' ');
+  return /*#__PURE__*/React.createElement("div", _extends({
+    className: cls,
+    role: "status"
+  }, rest), /*#__PURE__*/React.createElement("span", {
+    className: "utg-toast__icon"
+  }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: ICONS[variant],
+    size: 17,
+    strokeWidth: 2.6
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "utg-toast__body"
+  }, title != null && /*#__PURE__*/React.createElement("div", {
+    className: "utg-toast__title"
+  }, title), message != null && /*#__PURE__*/React.createElement("div", {
+    className: "utg-toast__msg"
+  }, message)), onClose && /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "utg-toast__close",
+    "aria-label": "Tutup",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: "x",
+    size: 16
+  })));
+}
+Object.assign(__ds_scope, { Toast });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/feedback/Toast.jsx", error: String((e && e.message) || e) }); }
+
+// components/forms/Input.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-field { display: flex; flex-direction: column; gap: 6px; font-family: var(--font-sans); }
+.utg-field__label { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--ink-700); }
+.utg-field__wrap {
+  display: flex; align-items: center; gap: 8px; box-sizing: border-box;
+  height: var(--control-md); padding: 0 14px; border-radius: var(--radius-md);
+  background: var(--glass-thin); border: 1px solid var(--glass-border-soft);
+  box-shadow: inset 0 1px 2px rgba(11,22,38,0.05);
+  -webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  transition: border-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+.utg-field__wrap:focus-within {
+  background: rgba(255,255,255,0.85); border-color: var(--ut-blue-400);
+  box-shadow: 0 0 0 4px var(--focus-ring), inset 0 1px 2px rgba(11,22,38,0.04);
+}
+.utg-field--lg .utg-field__wrap { height: var(--control-lg); border-radius: var(--radius-lg); }
+.utg-field__icon { color: var(--ink-400); flex: none; }
+.utg-field__input {
+  flex: 1; min-width: 0; border: 0; background: transparent; outline: none;
+  font-family: var(--font-sans); font-size: var(--text-base); color: var(--ink-900);
+}
+.utg-field__input::placeholder { color: var(--ink-400); }
+.utg-field--error .utg-field__wrap { border-color: var(--color-danger); }
+.utg-field--error .utg-field__wrap:focus-within { box-shadow: 0 0 0 4px rgba(224,50,46,0.25); }
+.utg-field__hint { font-size: var(--text-xs); color: var(--ink-400); }
+.utg-field--error .utg-field__hint { color: var(--color-danger); }
+.utg-field__wrap[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-field-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function Input({
+  label,
+  icon,
+  hint,
+  error,
+  size = 'md',
+  disabled = false,
+  className = '',
+  id,
+  ...rest
+}) {
+  useCSS();
+  const autoId = React.useId();
+  const fieldId = id || autoId;
+  const cls = ['utg-field', size === 'lg' && 'utg-field--lg', error && 'utg-field--error', className].filter(Boolean).join(' ');
+  const iconSize = size === 'lg' ? 20 : 18;
+  return /*#__PURE__*/React.createElement("div", {
+    className: cls
+  }, label && /*#__PURE__*/React.createElement("label", {
+    className: "utg-field__label",
+    htmlFor: fieldId
+  }, label), /*#__PURE__*/React.createElement("div", {
+    className: "utg-field__wrap",
+    "aria-disabled": disabled || undefined
+  }, icon && /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: icon,
+    size: iconSize,
+    className: "utg-field__icon"
+  }), /*#__PURE__*/React.createElement("input", _extends({
+    id: fieldId,
+    className: "utg-field__input",
+    disabled: disabled
+  }, rest))), (error || hint) && /*#__PURE__*/React.createElement("span", {
+    className: "utg-field__hint"
+  }, error || hint));
+}
+Object.assign(__ds_scope, { Input });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/forms/Input.jsx", error: String((e && e.message) || e) }); }
+
+// components/navigation/Tabs.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const CSS = `
+.utg-tabs { display: flex; align-items: stretch; gap: 4px; position: relative; font-family: var(--font-sans);
+  border-bottom: 1px solid var(--border-subtle); }
+.utg-tabs__tab {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px; padding: 10px 14px 13px;
+  font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--ink-500);
+  position: relative; white-space: nowrap; line-height: 1;
+  transition: color var(--dur-base) var(--ease-out);
+}
+.utg-tabs__tab:hover { color: var(--ink-800); }
+.utg-tabs__tab[aria-selected="true"] { color: var(--ut-blue-700); font-weight: var(--weight-semibold); }
+.utg-tabs__tab:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--focus-ring); border-radius: var(--radius-sm); }
+.utg-tabs__count { font-size: var(--text-2xs); font-weight: var(--weight-semibold);
+  background: rgba(11,22,38,0.08); color: var(--ink-600); border-radius: var(--radius-pill); padding: 1px 7px; }
+.utg-tabs__tab[aria-selected="true"] .utg-tabs__count { background: var(--ut-blue-100); color: var(--ut-blue-700); }
+.utg-tabs__ink {
+  position: absolute; bottom: -1px; height: 2.5px; border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--ut-blue-500), var(--ut-blue-700));
+  transition: left var(--dur-base) var(--ease-spring), width var(--dur-base) var(--ease-spring);
+}
+`;
+let injected = false;
+function useCSS() {
+  React.useInsertionEffect(() => {
+    if (injected) return;
+    injected = true;
+    const s = document.createElement('style');
+    s.id = 'utg-tabs-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }, []);
+}
+function Tabs({
+  items = [],
+  value,
+  defaultValue,
+  onChange,
+  className = '',
+  ...rest
+}) {
+  useCSS();
+  const tabs = items.map(t => typeof t === 'string' ? {
+    label: t,
+    value: t
+  } : t);
+  const isControlled = value !== undefined;
+  const [internal, setInternal] = React.useState(defaultValue ?? (tabs[0] && tabs[0].value));
+  const current = isControlled ? value : internal;
+  const ref = React.useRef(null);
+  const [ink, setInk] = React.useState({
+    left: 0,
+    width: 0
+  });
+  const idx = Math.max(0, tabs.findIndex(t => t.value === current));
+  React.useLayoutEffect(() => {
+    const wrap = ref.current;
+    if (!wrap) return;
+    const btn = wrap.querySelectorAll('.utg-tabs__tab')[idx];
+    if (btn) setInk({
+      left: btn.offsetLeft,
+      width: btn.offsetWidth
+    });
+  }, [idx, tabs.length]);
+  function pick(v) {
+    if (!isControlled) setInternal(v);
+    onChange && onChange(v);
+  }
+  return /*#__PURE__*/React.createElement("div", _extends({
+    className: ('utg-tabs ' + className).trim(),
+    role: "tablist",
+    ref: ref
+  }, rest), tabs.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.value,
+    type: "button",
+    role: "tab",
+    className: "utg-tabs__tab",
+    "aria-selected": t.value === current,
+    onClick: () => pick(t.value)
+  }, t.icon && /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: t.icon,
+    size: 16
+  }), t.label, t.count != null && /*#__PURE__*/React.createElement("span", {
+    className: "utg-tabs__count"
+  }, t.count))), /*#__PURE__*/React.createElement("span", {
+    className: "utg-tabs__ink",
+    style: {
+      left: ink.left,
+      width: ink.width
+    }
+  }));
+}
+Object.assign(__ds_scope, { Tabs });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/navigation/Tabs.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/ut-portal/App.jsx
+try { (() => {
+/* Root app — auth + navigation + toast host. */
+const {
+  useState: useStateApp,
+  useEffect: useEffectApp
+} = React;
+function EmptyScreen({
+  icon,
+  title
+}) {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Card,
+    Icon,
+    Button
+  } = UT;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "pf-screen"
+  }, /*#__PURE__*/React.createElement(Card, {
+    variant: "glass",
+    className: "pf-empty"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "pf-empty-icon"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: icon,
+    size: 30,
+    color: "var(--ut-blue-600)"
+  })), /*#__PURE__*/React.createElement("h3", null, title), /*#__PURE__*/React.createElement("p", null, "Modul ini adalah bagian dari rekreasi UI kit. Tambahkan layar nyata sesuai kebutuhan produk."), /*#__PURE__*/React.createElement(Button, {
+    variant: "glass"
+  }, "Pelajari lebih lanjut")));
+}
+const TITLES = {
+  home: 'Beranda',
+  courses: 'Mata Kuliah',
+  grades: 'Nilai & KHS',
+  schedule: 'Jadwal Ujian',
+  tutorial: 'Tutorial Online',
+  library: 'Perpustakaan Digital',
+  billing: 'Pembayaran'
+};
+function PortalApp() {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Toast
+  } = UT;
+  const [authed, setAuthed] = useStateApp(true); // open on dashboard; log out to see the login screen
+  const [screen, setScreen] = useStateApp('home');
+  const [toasts, setToasts] = useStateApp([]);
+  function pushToast(title, message) {
+    const id = Date.now();
+    setToasts(t => [...t, {
+      id,
+      title,
+      message
+    }]);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 4200);
+  }
+  if (!authed) return /*#__PURE__*/React.createElement(LoginScreen, {
+    onLogin: () => setAuthed(true)
+  });
+  let body;
+  if (screen === 'home') body = /*#__PURE__*/React.createElement(DashboardScreen, {
+    onToast: pushToast
+  });else if (screen === 'courses') body = /*#__PURE__*/React.createElement(CoursesScreen, null);else if (screen === 'grades') body = /*#__PURE__*/React.createElement(GradesScreen, null);else body = /*#__PURE__*/React.createElement(EmptyScreen, {
+    icon: (window.UT_DATA.nav.find(n => n.id === screen) || {}).icon || 'sparkles',
+    title: TITLES[screen]
+  });
+  return /*#__PURE__*/React.createElement("div", {
+    className: "pf-app"
+  }, /*#__PURE__*/React.createElement(Sidebar, {
+    active: screen,
+    onNavigate: setScreen,
+    onLogout: () => {
+      setAuthed(false);
+      setScreen('home');
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "pf-main"
+  }, /*#__PURE__*/React.createElement(TopBar, {
+    title: TITLES[screen]
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "pf-content"
+  }, body)), /*#__PURE__*/React.createElement("div", {
+    className: "pf-toasts"
+  }, toasts.map(t => /*#__PURE__*/React.createElement(Toast, {
+    key: t.id,
+    variant: "success",
+    title: t.title,
+    message: t.message,
+    onClose: () => setToasts(x => x.filter(y => y.id !== t.id))
+  }))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(PortalApp, null));
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/ut-portal/App.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/ut-portal/Login.jsx
+try { (() => {
+/* Login screen — glass card centered over the brand wallpaper. */
+const {
+  useState: useStateLogin
+} = React;
+function LoginScreen({
+  onLogin
+}) {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Button,
+    Input
+  } = UT;
+  const [nim, setNim] = useStateLogin('042118765');
+  const [pw, setPw] = useStateLogin('demo1234');
+  return /*#__PURE__*/React.createElement("div", {
+    className: "login-stage"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "login-card glass-thick"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "login-brand"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: window.__resources && window.__resources.shield || "../../assets/ut-shield.png",
+    alt: "Universitas Terbuka",
+    className: "login-shield"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "login-titles"
+  }, /*#__PURE__*/React.createElement("h1", null, "UT Portal"), /*#__PURE__*/React.createElement("p", null, "Direktorat Sistem Informasi"))), /*#__PURE__*/React.createElement("div", {
+    className: "login-form"
+  }, /*#__PURE__*/React.createElement(Input, {
+    label: "NIM",
+    icon: "user",
+    value: nim,
+    onChange: e => setNim(e.target.value),
+    placeholder: "Nomor Induk Mahasiswa"
+  }), /*#__PURE__*/React.createElement(Input, {
+    label: "Kata Sandi",
+    icon: "lock",
+    type: "password",
+    value: pw,
+    onChange: e => setPw(e.target.value),
+    placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "login-row"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "login-remember"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "checkbox",
+    defaultChecked: true
+  }), " Ingat saya"), /*#__PURE__*/React.createElement("a", {
+    className: "login-link",
+    href: "#"
+  }, "Lupa kata sandi?")), /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    size: "lg",
+    block: true,
+    onClick: onLogin
+  }, "Masuk"), /*#__PURE__*/React.createElement(Button, {
+    variant: "glass",
+    size: "lg",
+    block: true,
+    leadingIcon: /*#__PURE__*/React.createElement(UT.Icon, {
+      name: "shield-check",
+      size: 18
+    })
+  }, "Masuk dengan SSO UT")), /*#__PURE__*/React.createElement("p", {
+    className: "login-foot"
+  }, "Belum punya akun? ", /*#__PURE__*/React.createElement("a", {
+    className: "login-link",
+    href: "#"
+  }, "Aktivasi mahasiswa baru"))), /*#__PURE__*/React.createElement("p", {
+    className: "login-copy"
+  }, "\xA9 2026 Universitas Terbuka \xB7 Sistem Informasi Akademik"));
+}
+window.LoginScreen = LoginScreen;
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/ut-portal/Login.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/ut-portal/Screens.jsx
+try { (() => {
+/* Portal screens — Dashboard, Courses, Grades. */
+const {
+  useState: useStateScreens
+} = React;
+const TONE_BG = {
+  blue: 'linear-gradient(150deg, var(--ut-blue-400), var(--ut-blue-700))',
+  gold: 'linear-gradient(150deg, var(--ut-gold-400), var(--ut-gold-600))',
+  cyan: 'linear-gradient(150deg, var(--ut-cyan-soft), var(--ut-cyan))',
+  green: 'linear-gradient(150deg, var(--ut-green-soft), var(--ut-green))'
+};
+function StatCard({
+  stat
+}) {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Card,
+    Icon
+  } = UT;
+  return /*#__PURE__*/React.createElement(Card, {
+    variant: "glass",
+    padding: 18,
+    className: "pf-stat"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "pf-stat-icon",
+    style: {
+      background: TONE_BG[stat.tone]
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: stat.icon,
+    size: 20,
+    color: "#fff"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "pf-stat-label"
+  }, stat.label), /*#__PURE__*/React.createElement("div", {
+    className: "pf-stat-value"
+  }, stat.value, /*#__PURE__*/React.createElement("small", null, stat.sub)));
+}
+function DashboardScreen({
+  onToast
+}) {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Card,
+    Badge,
+    Button,
+    IconButton,
+    Icon
+  } = UT;
+  const D = window.UT_DATA;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "pf-screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-stats"
+  }, D.stats.map(s => /*#__PURE__*/React.createElement(StatCard, {
+    key: s.id,
+    stat: s
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "pf-grid2"
+  }, /*#__PURE__*/React.createElement(Card, {
+    variant: "glass",
+    title: "Jadwal Hari Ini",
+    subtitle: "Selasa, 18 Juni 2026",
+    action: /*#__PURE__*/React.createElement(Button, {
+      variant: "glass",
+      size: "sm",
+      trailingIcon: /*#__PURE__*/React.createElement(Icon, {
+        name: "chevron-right",
+        size: 15
+      })
+    }, "Semua")
+  }, /*#__PURE__*/React.createElement("ul", {
+    className: "pf-list"
+  }, D.schedule.map((s, i) => /*#__PURE__*/React.createElement("li", {
+    key: i,
+    className: "pf-list-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "pf-time"
+  }, s.time), /*#__PURE__*/React.createElement("span", {
+    className: "pf-rail"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "pf-list-main"
+  }, /*#__PURE__*/React.createElement("strong", null, s.title), /*#__PURE__*/React.createElement("span", {
+    className: "pf-mono"
+  }, s.code)), /*#__PURE__*/React.createElement(Badge, {
+    variant: s.tone,
+    dot: s.tone === 'danger'
+  }, s.tag))))), /*#__PURE__*/React.createElement(Card, {
+    variant: "glass",
+    title: "Pengumuman",
+    action: /*#__PURE__*/React.createElement(IconButton, {
+      icon: "more-horizontal",
+      label: "Opsi",
+      size: "sm"
+    })
+  }, /*#__PURE__*/React.createElement("ul", {
+    className: "pf-ann"
+  }, D.announcements.map((a, i) => /*#__PURE__*/React.createElement("li", {
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-ann-head"
+  }, /*#__PURE__*/React.createElement("strong", null, a.title), /*#__PURE__*/React.createElement("span", {
+    className: "pf-ann-date"
+  }, a.date)), /*#__PURE__*/React.createElement("p", null, a.body)))), /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    block: true,
+    onClick: () => onToast('KRS 2025.1 siap diisi', 'Klik untuk mulai memilih mata kuliah.'),
+    leadingIcon: /*#__PURE__*/React.createElement(Icon, {
+      name: "file-plus",
+      size: 17
+    })
+  }, "Isi KRS Semester Baru"))), /*#__PURE__*/React.createElement(Card, {
+    variant: "glass",
+    title: "Mata Kuliah Berjalan",
+    subtitle: "Semester 2024/2025.2 \xB7 8 mata kuliah",
+    action: /*#__PURE__*/React.createElement(Button, {
+      variant: "ghost",
+      size: "sm",
+      trailingIcon: /*#__PURE__*/React.createElement(Icon, {
+        name: "chevron-right",
+        size: 15
+      })
+    }, "Lihat semua")
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-courses"
+  }, D.courses.filter(c => c.status === 'Berjalan').slice(0, 4).map(c => /*#__PURE__*/React.createElement(CourseRow, {
+    key: c.code,
+    c: c
+  })))));
+}
+function CourseRow({
+  c
+}) {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Badge
+  } = UT;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "pf-course"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-course-top"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "pf-mono pf-course-code"
+  }, c.code), /*#__PURE__*/React.createElement(Badge, {
+    variant: c.status === 'Selesai' ? 'success' : 'brand',
+    size: "sm"
+  }, c.status)), /*#__PURE__*/React.createElement("div", {
+    className: "pf-course-name"
+  }, c.name), /*#__PURE__*/React.createElement("div", {
+    className: "pf-course-meta"
+  }, c.dosen, " \xB7 ", c.sks, " SKS"), /*#__PURE__*/React.createElement("div", {
+    className: "pf-progress"
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: c.progress + '%'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "pf-course-pct"
+  }, c.progress, "% selesai"));
+}
+function CoursesScreen() {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Card,
+    Tabs,
+    Input
+  } = UT;
+  const D = window.UT_DATA;
+  const [tab, setTab] = useStateScreens('all');
+  const filtered = D.courses.filter(c => tab === 'all' ? true : tab === 'active' ? c.status === 'Berjalan' : c.status === 'Selesai');
+  return /*#__PURE__*/React.createElement("div", {
+    className: "pf-screen"
+  }, /*#__PURE__*/React.createElement(Card, {
+    variant: "glass",
+    padding: 0,
+    className: "pf-coursecard"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-coursehead"
+  }, /*#__PURE__*/React.createElement(Tabs, {
+    value: tab,
+    onChange: setTab,
+    items: [{
+      label: 'Semua',
+      value: 'all',
+      count: D.courses.length
+    }, {
+      label: 'Berjalan',
+      value: 'active'
+    }, {
+      label: 'Selesai',
+      value: 'done'
+    }]
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "pf-coursesearch"
+  }, /*#__PURE__*/React.createElement(Input, {
+    icon: "search",
+    placeholder: "Cari\u2026"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "pf-courses pf-courses--page"
+  }, filtered.map(c => /*#__PURE__*/React.createElement(CourseRow, {
+    key: c.code,
+    c: c
+  })))));
+}
+function GradesScreen() {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Card,
+    Badge,
+    Button,
+    Icon,
+    SegmentedControl
+  } = UT;
+  const D = window.UT_DATA;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "pf-screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-grades-top"
+  }, /*#__PURE__*/React.createElement(Card, {
+    variant: "blue",
+    padding: 22,
+    className: "pf-ipk"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-ipk-label"
+  }, "Indeks Prestasi Kumulatif"), /*#__PURE__*/React.createElement("div", {
+    className: "pf-ipk-value"
+  }, "3.74"), /*#__PURE__*/React.createElement("div", {
+    className: "pf-ipk-sub"
+  }, "108 SKS \xB7 36 mata kuliah lulus")), /*#__PURE__*/React.createElement(Card, {
+    variant: "glass",
+    padding: 20,
+    className: "pf-ipk-side"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-ipk-side-head"
+  }, /*#__PURE__*/React.createElement("span", null, "Riwayat IP per semester"), /*#__PURE__*/React.createElement(SegmentedControl, {
+    options: ['1 thn', 'Semua'],
+    defaultValue: "Semua"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "pf-spark"
+  }, [3.4, 3.55, 3.62, 3.7, 3.74].map((v, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "pf-spark-bar"
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      height: (v - 3.2) / 0.6 * 100 + '%'
+    }
+  }), /*#__PURE__*/React.createElement("em", null, v.toFixed(2))))))), /*#__PURE__*/React.createElement(Card, {
+    variant: "glass",
+    title: "Kartu Hasil Studi",
+    subtitle: "Transkrip nilai kumulatif",
+    action: /*#__PURE__*/React.createElement(Button, {
+      variant: "glass",
+      size: "sm",
+      leadingIcon: /*#__PURE__*/React.createElement(Icon, {
+        name: "download",
+        size: 15
+      })
+    }, "Unduh KHS")
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "pf-table"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Kode"), /*#__PURE__*/React.createElement("th", null, "Mata Kuliah"), /*#__PURE__*/React.createElement("th", null, "SKS"), /*#__PURE__*/React.createElement("th", null, "Nilai"), /*#__PURE__*/React.createElement("th", null, "Mutu"))), /*#__PURE__*/React.createElement("tbody", null, D.grades.map(g => /*#__PURE__*/React.createElement("tr", {
+    key: g.code
+  }, /*#__PURE__*/React.createElement("td", {
+    className: "pf-mono"
+  }, g.code), /*#__PURE__*/React.createElement("td", null, g.name), /*#__PURE__*/React.createElement("td", null, g.sks), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(Badge, {
+    variant: g.grade.startsWith('A') ? 'success' : 'brand',
+    size: "sm"
+  }, g.grade)), /*#__PURE__*/React.createElement("td", {
+    className: "pf-mono"
+  }, g.mutu)))))));
+}
+window.DashboardScreen = DashboardScreen;
+window.CoursesScreen = CoursesScreen;
+window.GradesScreen = GradesScreen;
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/ut-portal/Screens.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/ut-portal/Shell.jsx
+try { (() => {
+/* App shell — frosted Sidebar + TopBar. */
+function Sidebar({
+  active,
+  onNavigate,
+  onLogout
+}) {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Icon,
+    Avatar
+  } = UT;
+  const D = window.UT_DATA;
+  return /*#__PURE__*/React.createElement("aside", {
+    className: "pf-sidebar"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-brand"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: window.__resources && window.__resources.disiMark || "../../assets/ut-disi-mark.png",
+    alt: "",
+    className: "pf-brand-mark"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "pf-brand-text"
+  }, /*#__PURE__*/React.createElement("strong", null, "UT Portal"), /*#__PURE__*/React.createElement("span", null, "DiSI"))), /*#__PURE__*/React.createElement("nav", {
+    className: "pf-nav"
+  }, D.nav.map(item => /*#__PURE__*/React.createElement("button", {
+    key: item.id,
+    className: 'pf-navitem' + (active === item.id ? ' is-active' : ''),
+    onClick: () => onNavigate(item.id)
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: item.icon,
+    size: 19
+  }), /*#__PURE__*/React.createElement("span", null, item.label)))), /*#__PURE__*/React.createElement("div", {
+    className: "pf-sidefoot"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "pf-userchip",
+    onClick: () => onNavigate('home')
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: D.user.name,
+    size: 36,
+    status: "online"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "pf-userchip-text"
+  }, /*#__PURE__*/React.createElement("strong", null, D.user.name), /*#__PURE__*/React.createElement("span", null, D.user.nim))), /*#__PURE__*/React.createElement("button", {
+    className: "pf-logout",
+    onClick: onLogout,
+    "aria-label": "Keluar"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "log-out",
+    size: 18
+  }))));
+}
+function TopBar({
+  title,
+  onSearch
+}) {
+  const UT = window.UTGlassDesignSystem_125d14;
+  const {
+    Input,
+    IconButton,
+    Tooltip,
+    Avatar
+  } = UT;
+  const D = window.UT_DATA;
+  return /*#__PURE__*/React.createElement("header", {
+    className: "pf-topbar glass-chrome"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pf-topbar-title"
+  }, /*#__PURE__*/React.createElement("h2", null, title), /*#__PURE__*/React.createElement("p", null, "Selamat datang kembali, ", D.user.name.split(' ')[0], " \uD83D\uDC4B")), /*#__PURE__*/React.createElement("div", {
+    className: "pf-topbar-search"
+  }, /*#__PURE__*/React.createElement(Input, {
+    icon: "search",
+    placeholder: "Cari mata kuliah, materi, layanan\u2026"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "pf-topbar-actions"
+  }, /*#__PURE__*/React.createElement(Tooltip, {
+    label: "Bantuan"
+  }, /*#__PURE__*/React.createElement(IconButton, {
+    icon: "circle-help",
+    variant: "ghost",
+    label: "Bantuan"
+  })), /*#__PURE__*/React.createElement(Tooltip, {
+    label: "Notifikasi"
+  }, /*#__PURE__*/React.createElement(IconButton, {
+    icon: "bell",
+    variant: "ghost",
+    label: "Notifikasi"
+  })), /*#__PURE__*/React.createElement(Avatar, {
+    name: D.user.name,
+    size: 38,
+    ring: true
+  })));
+}
+window.Sidebar = Sidebar;
+window.TopBar = TopBar;
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/ut-portal/Shell.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/ut-portal/data.js
+try { (() => {
+/* Fake data for the UT Portal UI kit — plain globals, no exports. */
+window.UT_DATA = {
+  user: {
+    name: 'Dewi Lestari',
+    nim: '042118765',
+    prodi: 'S1 Manajemen',
+    avatar: null,
+    semester: 5
+  },
+  stats: [{
+    id: 'ipk',
+    label: 'IPK Kumulatif',
+    value: '3.74',
+    sub: '/ 4.00',
+    icon: 'award',
+    tone: 'blue'
+  }, {
+    id: 'sks',
+    label: 'SKS Ditempuh',
+    value: '108',
+    sub: 'dari 144',
+    icon: 'layers',
+    tone: 'gold'
+  }, {
+    id: 'mk',
+    label: 'MK Semester Ini',
+    value: '8',
+    sub: '21 SKS',
+    icon: 'book-open',
+    tone: 'cyan'
+  }, {
+    id: 'bill',
+    label: 'Tagihan',
+    value: 'Lunas',
+    sub: '2024/2025.2',
+    icon: 'wallet',
+    tone: 'green'
+  }],
+  nav: [{
+    id: 'home',
+    label: 'Beranda',
+    icon: 'house'
+  }, {
+    id: 'courses',
+    label: 'Mata Kuliah',
+    icon: 'book-open'
+  }, {
+    id: 'grades',
+    label: 'Nilai & KHS',
+    icon: 'award'
+  }, {
+    id: 'schedule',
+    label: 'Jadwal Ujian',
+    icon: 'calendar'
+  }, {
+    id: 'tutorial',
+    label: 'Tuton',
+    icon: 'video'
+  }, {
+    id: 'library',
+    label: 'Perpustakaan',
+    icon: 'library'
+  }, {
+    id: 'billing',
+    label: 'Pembayaran',
+    icon: 'wallet'
+  }],
+  schedule: [{
+    time: '08.00',
+    title: 'Tuton — Manajemen Keuangan',
+    code: 'EKMA4213',
+    tag: 'Sesi 5',
+    tone: 'brand'
+  }, {
+    time: '10.30',
+    title: 'Webinar — Metode Penelitian',
+    code: 'ISIP4216',
+    tag: 'Live',
+    tone: 'danger'
+  }, {
+    time: '13.00',
+    title: 'Kuis — Statistika Ekonomi',
+    code: 'ESPA4123',
+    tag: 'Tenggat',
+    tone: 'gold'
+  }],
+  announcements: [{
+    title: 'Pengisian KRS 2025.1 dibuka',
+    date: '17 Jun',
+    body: 'Periode registrasi mata kuliah semester ganjil telah dibuka hingga 5 Juli.'
+  }, {
+    title: 'Jadwal UAS THE dirilis',
+    date: '12 Jun',
+    body: 'Ujian Akhir Semester berbasis THE akan berlangsung 28 Juni–6 Juli.'
+  }],
+  courses: [{
+    code: 'EKMA4213',
+    name: 'Manajemen Keuangan',
+    sks: 3,
+    dosen: 'Dr. Rahmawati',
+    progress: 72,
+    status: 'Berjalan'
+  }, {
+    code: 'ISIP4216',
+    name: 'Metode Penelitian Sosial',
+    sks: 3,
+    dosen: 'Prof. Hadi S.',
+    progress: 54,
+    status: 'Berjalan'
+  }, {
+    code: 'ESPA4123',
+    name: 'Statistika Ekonomi',
+    sks: 3,
+    dosen: 'Dr. Lukman',
+    progress: 88,
+    status: 'Berjalan'
+  }, {
+    code: 'EKMA4214',
+    name: 'Manajemen SDM',
+    sks: 3,
+    dosen: 'Dr. Siti A.',
+    progress: 40,
+    status: 'Berjalan'
+  }, {
+    code: 'MKDU4111',
+    name: 'Pendidikan Kewarganegaraan',
+    sks: 3,
+    dosen: 'Drs. Bambang',
+    progress: 100,
+    status: 'Selesai'
+  }, {
+    code: 'EKMA4116',
+    name: 'Manajemen',
+    sks: 3,
+    dosen: 'Dr. Yuni',
+    progress: 100,
+    status: 'Selesai'
+  }],
+  grades: [{
+    code: 'MKDU4111',
+    name: 'Pendidikan Kewarganegaraan',
+    sks: 3,
+    grade: 'A',
+    mutu: '4.00'
+  }, {
+    code: 'EKMA4116',
+    name: 'Manajemen',
+    sks: 3,
+    grade: 'A',
+    mutu: '4.00'
+  }, {
+    code: 'ESPA4110',
+    name: 'Pengantar Ekonomi Mikro',
+    sks: 3,
+    grade: 'A-',
+    mutu: '3.70'
+  }, {
+    code: 'ISIP4110',
+    name: 'Pengantar Sosiologi',
+    sks: 3,
+    grade: 'B+',
+    mutu: '3.30'
+  }, {
+    code: 'MKDU4107',
+    name: 'Bahasa Inggris',
+    sks: 3,
+    grade: 'B',
+    mutu: '3.00'
+  }]
+};
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/ut-portal/data.js", error: String((e && e.message) || e) }); }
+
+__ds_ns.Button = __ds_scope.Button;
+
+__ds_ns.IconButton = __ds_scope.IconButton;
+
+__ds_ns.SegmentedControl = __ds_scope.SegmentedControl;
+
+__ds_ns.Avatar = __ds_scope.Avatar;
+
+__ds_ns.Badge = __ds_scope.Badge;
+
+__ds_ns.Card = __ds_scope.Card;
+
+__ds_ns.Dialog = __ds_scope.Dialog;
+
+__ds_ns.Toast = __ds_scope.Toast;
+
+__ds_ns.Tooltip = __ds_scope.Tooltip;
+
+__ds_ns.Input = __ds_scope.Input;
+
+__ds_ns.Switch = __ds_scope.Switch;
+
+__ds_ns.Icon = __ds_scope.Icon;
+
+__ds_ns.Tabs = __ds_scope.Tabs;
+
+})();

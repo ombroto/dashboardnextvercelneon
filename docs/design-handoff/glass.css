@@ -1,0 +1,81 @@
+# UT Glass Design System
+
+An Apple-inspired **glassmorphism** design system for **Universitas Terbuka (UT)** — Indonesia's national open university — and specifically its **Direktorat Sistem Informasi (DiSI)**, the Information Systems Directorate. The system pairs Apple's "liquid glass" material language (frosted translucency, backdrop blur, soft layered shadows, spring motion) with UT's brand colors, extracted directly from the official logo.
+
+> **Brief:** *"glass UI seperti Apple dengan color scheme UT logo"* — a glass UI like Apple's, using the UT logo's color scheme.
+
+## Context & sources
+- **Provided asset:** `uploads/logo.png` — a combined lockup containing the **UT university shield** ("UNIVERSITAS TERBUKA") and the **DiSI lockup** (rainbow swirl + "DIREKTORAT SISTEM INFORMASI"). These were programmatically cropped into transparent PNGs in `assets/`.
+- **No codebase or Figma** was provided. The color palette is sampled pixel-accurately from the logo; the UI kit is an original glass recreation of a generic academic-portal information architecture using authentic UT branding. Swap in real product views/code when available.
+
+---
+
+## Content fundamentals
+The product surface is an Indonesian-language academic portal, so copy is **Bahasa Indonesia** with familiar academic shorthand.
+
+- **Language & tone:** warm, plain, encouraging. Friendly but institutional — never slangy. Example greeting: *"Selamat datang kembali, Dewi"*.
+- **Address:** second-person implied/polite; institution speaks *to* the student. Avoid stiff bureaucratic phrasing where a plain verb works (*"Isi KRS"*, *"Unduh KHS"*).
+- **Casing:** Title Case for nav labels and card titles (*"Mata Kuliah", "Nilai & KHS"*); sentence case for body and helper text.
+- **Domain vocabulary (keep verbatim):** NIM (student ID), KRS (course-registration card), KHS (study-results card), IPK (cumulative GPA), IP (semester GPA), SKS (credit units), Tuton (online tutorial), THE (take-home exam), Prodi (study program), UAS (final exam).
+- **Numerals:** monospace for codes, IDs, and metrics (NIM `042118765`, course code `EKMA4213`, IPK `3.74`). Indonesian decimals shown with a dot here for code simplicity.
+- **Emoji:** sparingly — at most a single waving 👋 in a greeting. Not used in labels, buttons, or data. No decorative emoji.
+- **Buttons:** imperative verb + object, short: *"Masuk", "Isi KRS Semester Baru", "Unduh KHS"*.
+
+---
+
+## Visual foundations
+The look is **frosted glass floating over a soft UT-tinted aurora**. Commit to these motifs:
+
+- **Backgrounds:** a fixed multi-radial **aurora mesh** (`--app-bg`) blending UT gold, magenta, cyan, and green into a pale blue base. Glass surfaces sit over it so the blur always has color to work with. No flat gray pages, no photographic backdrops.
+- **The glass material (the core motif):** translucent white fills (42%–86% opacity, five thicknesses: ultrathin→chrome) + `backdrop-filter: blur() saturate(180%)`. Every glass surface carries a **bright top inner highlight** (`--glass-edge-top`) and a **hairline border** (`rgba(255,255,255,.55)`) — these two details are what read as "glass." A `@supports` fallback swaps to near-opaque white where backdrop-filter is unavailable.
+- **Color:** royal **UT Blue `#004a93`** is the primary; **Gold `#f5c518`** is the secondary. The DiSI swirl supplies accents (magenta, orange, green, cyan) used for status and data viz — never as large fills. Neutrals are a **cool slate** ramp tuned to read over glass.
+- **Type:** SF-Pro-style stack — native `-apple-system` first, **Geist** (Google Fonts) as the cross-platform fallback (Geist was drawn from SF Pro/SF Mono/Inter). Display sizes use **tight negative tracking** (the Apple hallmark); body is **17px**. Mono (SF Mono / Geist Mono) for codes and numerals.
+- **Corner radii:** generous and Apple-continuous — pills for controls; `lg`/`xl` (20–28px) for cards; `2xl` (36px) for modal sheets.
+- **Shadows / elevation:** soft, **cool-tinted**, multi-layer (`--shadow-xs…xl`). Glass surfaces combine a drop shadow with the inset top highlight + a faint inner ring. No hard or pure-black shadows.
+- **Borders:** hairline. Light highlight borders on glass; subtle ink-alpha borders (`--border-subtle/-default`) elsewhere.
+- **Transparency & blur:** used purposefully for *chrome and overlays* (sidebar, top bar, cards, dialogs, toasts, tooltips, segmented tracks) — i.e. anything floating above content. Body content sits on the lightly-frosted surfaces, not raw glass.
+- **Motion:** quick and springy. Durations 140–360ms; eases `--ease-out` and a gentle `--ease-spring` (slight overshoot) for thumbs/indicators (segmented control, switch knob, tab underline, dialog entrance). Reduced-motion disables dialog animation.
+- **Hover states:** surfaces brighten (raise white opacity) or lift 2px with a larger shadow (interactive cards); ghost controls gain a faint ink tint. **Press states:** controls scale down (`0.92–0.97`) — the iOS tactile shrink. No color-invert flashes.
+- **Focus:** a 4px brand-blue ring (`--focus-ring`) — always visible, never removed.
+- **Imagery vibe:** cool, bright, airy. Color comes from the wallpaper and brand accents, not from photos.
+
+---
+
+## Iconography
+- **Set:** **[Lucide](https://lucide.dev)** — clean, consistent 2px-stroke outline icons, loaded from the UMD CDN (`https://unpkg.com/lucide@latest/dist/umd/lucide.min.js`). It is our documented **free stand-in for Apple's SF Symbols** (SF Symbols is not redistributable). ⚠️ *Substitution flagged — see Caveats.*
+- **Usage:** the `Icon` React component reads glyph data from the global `window.lucide` and renders inline SVG inheriting `currentColor`, so icons tint with surrounding text. Names are kebab-case Lucide names (`house`, `book-open`, `graduation-cap`, `award`, `calendar`, `wallet`, `bell`, `search`, `download`…).
+- **Sizing:** 16px (inline/small controls), 18–20px (buttons, nav, fields), 22–30px (feature tiles). Stroke stays 2px; bump to ~2.6px only for tiny filled status glyphs (e.g. toast check).
+- **No hand-drawn UI icons, no emoji-as-icons, no icon font.** Brand marks (shield, swirl) are real PNG assets in `assets/`, never redrawn.
+
+---
+
+## Index / manifest
+**Root**
+- `styles.css` — the single entry point consumers link (`@import`s only).
+- `readme.md` — this guide. · `SKILL.md` — Agent-Skills-compatible wrapper.
+
+**`tokens/`** — `fonts.css` (Geist `@import`), `colors.css`, `typography.css`, `spacing.css` (+ radii/sizing), `glass.css` (materials, blur, shadows, motion + `.glass*` utility classes).
+
+**`assets/`** — `ut-shield.png` (university shield), `ut-disi-lockup.png` (full DiSI lockup), `ut-disi-mark.png` (swirl mark).
+
+**`components/`** — reusable React primitives (namespace `window.UTGlassDesignSystem_125d14`):
+- `actions/` — **Button**, **IconButton**, **SegmentedControl**
+- `forms/` — **Input**, **Switch**
+- `data-display/` — **Card**, **Badge**, **Avatar**
+- `navigation/` — **Tabs**
+- `feedback/` — **Dialog**, **Toast**, **Tooltip**
+- `icon/` — **Icon** (Lucide wrapper)
+
+Each directory has `<Name>.jsx` + `.d.ts` + `.prompt.md` and one `@dsCard` demo HTML.
+
+**`guidelines/`** — foundation specimen cards (Colors, Type, Spacing, Glass, Brand) shown in the Design System tab.
+
+**`ui_kits/ut-portal/`** — the **UT Portal** student-dashboard recreation (login, dashboard, courses, grades). See its `README.md`.
+
+---
+
+## Caveats
+- **Apple system font:** the stack leads with `-apple-system`/`BlinkMacSystemFont`, so Apple devices render the real **SF Pro** system font automatically (no webfont needed). **Geist** (bundled fallback) covers every other platform. If you want a pixel-identical Apple look on non-Apple devices, upload licensed SF Pro web fonts and I'll add `@font-face` rules and re-introduce the named family.
+- **Lucide** substitutes for **SF Symbols**. If you have a licensed SF Symbols export (or prefer Phosphor), say so and I'll swap the icon set.
+- **Geist** loads from the Google Fonts CDN, so its `@font-face` rules aren't bundled into this project's CSS closure (no local binaries). Tell me if you need them self-hosted/offline.
+- The UI kit is an **original recreation** — no UT portal code/Figma was provided. Share a repo or Figma and I'll match real screens precisely.
