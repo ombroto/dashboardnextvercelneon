@@ -16,7 +16,18 @@ export function SearchForm({ error }: { error?: string }) {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        maxWidth: 660,
+        margin: '26px auto 0',
+        padding: 22,
+        borderRadius: 'var(--radius-xl)',
+        background: 'var(--glass-regular)',
+        border: '1px solid var(--glass-border)',
+        boxShadow: 'var(--shadow-lg), var(--glass-edge-top)',
+        backdropFilter: 'blur(24px) saturate(180%)',
+      }}
+    >
       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
         <div style={{ flex: 1 }}>
           <Input

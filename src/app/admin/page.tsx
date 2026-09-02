@@ -3,6 +3,8 @@ import { AdminTabs } from '@/components/admin/AdminTabs';
 import { UploadTab } from '@/components/admin/UploadTab';
 import { PenerimaTable } from '@/components/admin/PenerimaTable';
 import { LogTab } from '@/components/admin/LogTab';
+import { Button } from '@/components/ui/Button';
+import { logoutAction } from '@/app/admin/actions';
 
 export default async function AdminPage({
   searchParams,
@@ -14,7 +16,15 @@ export default async function AdminPage({
   return (
     <main style={{ minHeight: '100vh', padding: '20px 32px 56px' }}>
       <div style={{ maxWidth: 1180, margin: '0 auto' }}>
-        <h2 style={{ fontFamily: 'var(--font-display)' }}>Kelola Sertifikat</h2>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 18 }}>
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', margin: 0 }}>Kelola Sertifikat</h2>
+            <p style={{ margin: '3px 0 0', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>Diklat BPIP RI · Sekretariat Diklat</p>
+          </div>
+          <form action={logoutAction}>
+            <Button variant="glass" type="submit">Keluar</Button>
+          </form>
+        </div>
         <StatsCards />
         <AdminTabs current={tab} />
         {tab === 'unggah' && <UploadTab />}
