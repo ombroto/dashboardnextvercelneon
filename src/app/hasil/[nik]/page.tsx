@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { searchByNik } from '@/lib/search';
 import { maskNik } from '@/lib/nik';
 import { CertificateCard } from '@/components/search/CertificateCard';
@@ -8,7 +8,7 @@ export default async function HasilPage({ params }: { params: Promise<{ nik: str
   const person = await searchByNik(nik);
 
   if (!person) {
-    notFound();
+    redirect('/?error=' + encodeURIComponent('Data sertifikat tidak ditemukan. Periksa kembali NIK yang dimasukkan.'));
   }
 
   return (
