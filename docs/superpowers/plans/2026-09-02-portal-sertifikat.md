@@ -516,9 +516,13 @@ export const db = drizzle(sql, { schema });
 
 - [ ] **Step 4: Write `drizzle.config.ts`**
 
+Note: use `dotenv`'s `config({ path: '.env.local' })` form here, not the bare `import 'dotenv/config'` side-effect import — the latter only auto-loads a file literally named `.env`, and this project's local secrets live in `.env.local` (the Next.js convention), so the bare import silently leaves `DATABASE_URL` unset for any command run outside Next's own dev/build process (drizzle-kit, `tsx` scripts).
+
 ```ts
-import 'dotenv/config';
+import { config } from 'dotenv';
 import { defineConfig } from 'drizzle-kit';
+
+config({ path: '.env.local' });
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set');
@@ -586,10 +590,13 @@ export default defineConfig({
 });
 ```
 
-Write `vitest.setup.ts`:
+Write `vitest.setup.ts` — this also loads `.env.local` into `process.env` before any test runs, since Vitest does not do this automatically for plain `process.env` reads (only Vite's `import.meta.env`, which this project's Node-side `src/db/index.ts` doesn't use) and every integration test in this plan needs `process.env.DATABASE_URL` set:
 
 ```ts
 import '@testing-library/jest-dom/vitest';
+import { config } from 'dotenv';
+
+config({ path: '.env.local' });
 ```
 
 - [ ] **Step 2: Write the failing test**
@@ -616,12 +623,16 @@ Expected: FAIL — `bcryptjs` not yet exercised in this file structure, or passe
 
 - [ ] **Step 4: Write `src/db/seed.ts`**
 
+Same note as Task 3's `drizzle.config.ts`: load `.env.local` explicitly, not the bare `dotenv/config` side-effect import.
+
 ```ts
-import 'dotenv/config';
+import { config } from 'dotenv';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import { db } from './index';
 import { adminUsers } from './schema';
+
+config({ path: '.env.local' });
 
 async function seed() {
   const email = process.env.ADMIN_EMAIL;
