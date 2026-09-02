@@ -590,13 +590,19 @@ export default defineConfig({
 });
 ```
 
-Write `vitest.setup.ts` — this also loads `.env.local` into `process.env` before any test runs, since Vitest does not do this automatically for plain `process.env` reads (only Vite's `import.meta.env`, which this project's Node-side `src/db/index.ts` doesn't use) and every integration test in this plan needs `process.env.DATABASE_URL` set:
+Write `vitest.setup.ts` — this also loads `.env.local` into `process.env` before any test runs, since Vitest does not do this automatically for plain `process.env` reads (only Vite's `import.meta.env`, which this project's Node-side `src/db/index.ts` doesn't use) and every integration test in this plan needs `process.env.DATABASE_URL` set. It also registers `@testing-library/react`'s `cleanup()` after every test — Task 8 onward renders components with `render()` in multiple `it()` blocks per file, and without explicit cleanup the DOM from one test leaks into the next (Vitest doesn't auto-invoke Testing Library's cleanup the way some other runners do), causing spurious "multiple elements found" failures in a later test that has nothing wrong with it:
 
 ```ts
 import '@testing-library/jest-dom/vitest';
+import { cleanup } from '@testing-library/react';
+import { afterEach } from 'vitest';
 import { config } from 'dotenv';
 
 config({ path: '.env.local' });
+
+afterEach(() => {
+  cleanup();
+});
 ```
 
 - [ ] **Step 2: Write the failing test**
