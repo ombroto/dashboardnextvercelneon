@@ -1,4 +1,4 @@
-import { eq, ilike } from 'drizzle-orm';
+import { eq, ilike, or, desc } from 'drizzle-orm';
 import { db } from '@/db';
 import { sertifikat, kegiatan } from '@/db/schema';
 
@@ -94,4 +94,45 @@ export async function getCertificateById(id: number): Promise<CertificateDetail 
     fileUrl: s.fileUrl,
     fileSize: s.fileSize,
   };
+}
+
+import { del } from '@vercel/blob';
+
+export async function deleteSertifikat(id: number): Promise<void> {
+  const [row] = await db.select().from(sertifikat).where(eq(sertifikat.id, id));
+  if (row?.fileUrl) {
+    await del(row.fileUrl).catch(() => undefined);
+  }
+  await db.delete(sertifikat).where(eq(sertifikat.id, id));
+}
+
+export interface AdminSertifikatRow {
+  id: number;
+  nama: string;
+  nik: string;
+  nomor: string;
+  kegiatanNama: string;
+  tanggalTerbit: string;
+  status: 'siap' | 'belum';
+  unduhCount: number;
+}
+
+export async function getAllSertifikat(filter: { q?: string } = {}): Promise<AdminSertifikatRow[]> {
+  const rows = await db
+    .select({ sertifikat, kegiatan })
+    .from(sertifikat)
+    .innerJoin(kegiatan, eq(sertifikat.kegiatanId, kegiatan.id))
+    .where(filter.q ? or(ilike(sertifikat.nama, `%${filter.q}%`), ilike(sertifikat.nik, `%${filter.q}%`), ilike(sertifikat.nomor, `%${filter.q}%`)) : undefined)
+    .orderBy(desc(sertifikat.createdAt));
+
+  return rows.map((r) => ({
+    id: r.sertifikat.id,
+    nama: r.sertifikat.nama,
+    nik: r.sertifikat.nik,
+    nomor: r.sertifikat.nomor,
+    kegiatanNama: r.kegiatan.nama,
+    tanggalTerbit: r.kegiatan.tanggalTerbit,
+    status: r.sertifikat.status,
+    unduhCount: r.sertifikat.unduhCount,
+  }));
 }
