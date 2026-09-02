@@ -44,12 +44,20 @@ export async function searchByNik(nik: string): Promise<PersonResult | null> {
   return groupToPerson(nik, rows);
 }
 
+function escapeIlikePattern(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+}
+
 export async function searchByName(name: string): Promise<PersonResult[]> {
+  const trimmed = name.trim();
+  if (trimmed.length < 3) return [];
+
   const rows = await db
     .select({ sertifikat, kegiatan })
     .from(sertifikat)
     .innerJoin(kegiatan, eq(sertifikat.kegiatanId, kegiatan.id))
-    .where(ilike(sertifikat.nama, `%${name}%`));
+    .where(ilike(sertifikat.nama, `%${escapeIlikePattern(trimmed)}%`))
+    .limit(20);
 
   const byNik = new Map<string, JoinedRow[]>();
   for (const row of rows) {

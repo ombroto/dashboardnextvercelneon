@@ -11,7 +11,7 @@ export async function GET() {
     .orderBy(desc(unduhanLog.waktu));
 
   const header = 'waktu,nama,ip\n';
-  const body = rows.map((r) => `${r.waktu.toISOString()},"${r.nama}",${r.ip}`).join('\n');
+  const body = rows.map((r) => `${r.waktu.toISOString()},"${r.nama.replace(/"/g, '""')}",${r.ip}`).join('\n');
 
   return new NextResponse(header + body, {
     headers: {

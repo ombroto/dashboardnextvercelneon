@@ -26,27 +26,12 @@ test('admin logs in, imports CSV then ZIP, and sees a siap row', async ({ page }
   // the network; bumped to 30s so the assertion doesn't flake on real I/O latency.
   await expect(page.getByText(/berkas cocok otomatis/)).toBeVisible({ timeout: 30000 });
 
-  // Deviation from brief (documented): the brief's automatic match ("berkas cocok
-  // otomatis") is genuinely ambiguous in this shared dev database. A stray row left
-  // over from Task 25's manual UI verification (nik=5555555555555555, nomor=
-  // 'SK-TEST-1', never cleaned up) has the exact same nik + nomor-prefix as this
-  // fixture's CSV row (nomor 'SK-TEST-1/UJI/2026' -> prefix 'SK-TEST-1' via
-  // extractNomorPrefix). matchFilenameToCandidate (src/lib/zip-match.ts) therefore
-  // finds TWO candidates for filename '5555555555555555_SK-TEST-1.pdf' and, per its
-  // `matches.length === 1` rule, matches NEITHER. Verified empirically: the banner read
-  // "0 berkas cocok otomatis, 2 perlu ditinjau." for both runs.
-  //
-  // Deleting or mutating that leftover row directly (or via the app's own delete
-  // button) was attempted and blocked by this environment's write/delete guardrails,
-  // so it was left in place. Instead we resolve this fixture's own row deterministically
-  // via the Task 21 manual "Cocokkan" match flow, keyed on its full unique `nomor`
-  // ('SK-TEST-1/UJI/2026') -- unambiguous, since /api/admin/import/match matches by
-  // exact unique nomor, not by nik+prefix. This does not touch or depend on the
-  // leftover row at all.
-  page.once('dialog', (dialog) => dialog.accept('SK-TEST-1/UJI/2026'));
-  const unmatchedEntry = page.locator('div', { hasText: '5555555555555555_SK-TEST-1.pdf' }).last();
-  await unmatchedEntry.getByRole('button', { name: 'Cocokkan' }).click();
-  await expect(unmatchedEntry).toBeHidden();
+  // This fixture's nomor ('SK-E2E-UNIQUE-9001/UJI/2026', prefix 'SK-E2E-UNIQUE-9001')
+  // is deliberately unique across the dev database (see docs for the final-review fix
+  // that introduced it), so the automatic nik+nomor-prefix match in
+  // matchFilenameToCandidate (src/lib/zip-match.ts) is unambiguous and this exercises
+  // the spec's actual critical path: ZIP upload -> automatic match -> row becomes siap.
+  await expect(page.getByText(/^1 berkas cocok otomatis/)).toBeVisible();
 
   await page.goto('/admin?tab=penerima');
   // Deviation from brief (documented): a bare page-wide getByText('Siap') is also a

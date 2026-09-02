@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Readable } from 'node:stream';
+import path from 'node:path';
 import unzipper from 'unzipper';
 import { put } from '@vercel/blob';
 import { eq } from 'drizzle-orm';
@@ -26,7 +27,14 @@ export async function POST(request: Request) {
   await nodeStream
     .pipe(unzipper.Parse())
     .on('entry', function (entry: unzipper.Entry) {
-      const filename = entry.path;
+      // path.basename() strips any directory component (including a crafted
+      // `../` traversal) from the archive entry's path before it's ever used as
+      // a Blob key or matched against a candidate filename, so a malicious
+      // archive can't write outside the intended Blob key prefixes, and PDFs
+      // nested in subdirectories are matched the same way top-level ones are
+      // instead of always landing in "unmatched" (a nested path never equals
+      // `${nik}_${prefix}.pdf`, which has no `/`).
+      const filename = path.basename(entry.path);
       const lower = filename.toLowerCase();
       if (lower === 'manifest.csv' || lower.endsWith('.pdf')) {
         const chunks: Buffer[] = [];

@@ -12,11 +12,19 @@ describe('ZIP import route', () => {
   let archiveBlobUrl: string;
 
   beforeAll(async () => {
+    // Defensive cleanup: tests/e2e/admin-flow.spec.ts imports this exact nomor
+    // (via tests/fixtures/sertifikat-test.csv, upserted, never deleted afterward)
+    // to match this same shared tests/fixtures/sertifikat-test.zip fixture. If that
+    // e2e test already ran against this database, a row with this nomor exists and
+    // would collide with the direct insert below (nomor is unique) -- so remove it
+    // first rather than let this test flake on run order.
+    await db.delete(sertifikat).where(eq(sertifikat.nomor, 'SK-E2E-UNIQUE-9001/UJI/2026'));
+
     const [k] = await db.insert(kegiatan).values({ nama: 'Uji ZIP', tanggalTerbit: '2026-02-01', jumlahJp: 8 }).returning();
     kegiatanId = k.id;
     const [s] = await db
       .insert(sertifikat)
-      .values({ kegiatanId, nama: 'Peserta ZIP', nik: '5555555555555555', nomor: 'SK-TEST-1/UJI/2026', status: 'belum' })
+      .values({ kegiatanId, nama: 'Peserta ZIP', nik: '5555555555555555', nomor: 'SK-E2E-UNIQUE-9001/UJI/2026', status: 'belum' })
       .returning();
     certId = s.id;
 

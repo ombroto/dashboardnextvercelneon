@@ -1,18 +1,22 @@
-import * as icons from 'lucide-react';
-import { icons as iconRegistry } from 'lucide-react';
+import { Search, Mail, KeyRound, Trash2 } from 'lucide-react';
 
-type IconName = keyof typeof iconRegistry;
+// Explicit map of only the icons actually used across the codebase (checked via
+// `icon="..."` usages in Input/IconButton consumers). A namespace import
+// (`import * as icons from 'lucide-react'`) can't be tree-shaken by any bundler
+// because of the computed member lookup, so it used to ship the entire icon
+// library to the client on every page that renders an Input or IconButton —
+// including the public search page. Add new icons here explicitly as they're used.
+const iconMap = {
+  search: Search,
+  mail: Mail,
+  'key-round': KeyRound,
+  'trash-2': Trash2,
+} as const;
 
-function toPascalCase(name: string): string {
-  return name
-    .split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
-}
+type IconName = keyof typeof iconMap;
 
 export function Icon({ name, size = 18 }: { name: string; size?: number }) {
-  const componentName = toPascalCase(name) as keyof typeof icons;
-  const LucideIcon = icons[componentName] as React.ComponentType<{ size?: number }> | undefined;
+  const LucideIcon = iconMap[name as IconName];
   if (!LucideIcon) return null;
   return <LucideIcon size={size} />;
 }
