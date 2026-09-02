@@ -95,10 +95,14 @@ Note (added after Task 1/2 execution surfaced it): Next.js 16.3.4's own build/de
 
 - [ ] **Step 4: Write `next.config.ts`**
 
+Note (added after Task 20/22 surfaced it): `unzipper` (used by Task 20's ZIP route) has an optional S3-source code path that does a static `require('@aws-sdk/client-s3')` — a package this project never installs, since it's only reachable when reading a ZIP from S3, which this project never does. Turbopack (Next.js 16's default bundler) still tries to resolve that `require()` at build time and fails hard with "Module not found," breaking `npm run build` project-wide once Task 20 lands. `serverExternalPackages: ['unzipper']` tells Next.js to leave `unzipper` unbundled (loaded via Node's own `require` at runtime instead), which sidesteps Turbopack's static analysis of that dead code path entirely. The content below already includes this so it's in place before Task 20 needs it:
+
 ```ts
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  serverExternalPackages: ['unzipper'],
+};
 
 export default nextConfig;
 ```
