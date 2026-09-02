@@ -623,14 +623,12 @@ Expected: FAIL — `bcryptjs` not yet exercised in this file structure, or passe
 
 - [ ] **Step 4: Write `src/db/seed.ts`**
 
-Same note as Task 3's `drizzle.config.ts`: load `.env.local` explicitly, not the bare `dotenv/config` side-effect import.
+Same note as Task 3's `drizzle.config.ts`: load `.env.local` explicitly, not the bare `dotenv/config` side-effect import. **Additionally**, `./index` and `./schema` must be imported dynamically (`await import(...)`) inside `seed()`, not as static top-of-file imports: ES module imports are evaluated in dependency order before the importing file's own top-level statements run, so a static `import { db } from './index'` would run `src/db/index.ts`'s module-level `neon(process.env.DATABASE_URL)` call — and throw, since it's unset — before this file's own `config({ path: '.env.local' })` call ever executes, regardless of which line comes first textually.
 
 ```ts
 import { config } from 'dotenv';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
-import { db } from './index';
-import { adminUsers } from './schema';
 
 config({ path: '.env.local' });
 
@@ -642,6 +640,11 @@ async function seed() {
   if (!email || !password) {
     throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD must be set');
   }
+
+  // Loaded dynamically so config() above populates process.env.DATABASE_URL
+  // before src/db/index.ts reads it at module-evaluation time.
+  const { db } = await import('./index');
+  const { adminUsers } = await import('./schema');
 
   const existing = await db.select().from(adminUsers).where(eq(adminUsers.email, email));
   if (existing.length > 0) {
