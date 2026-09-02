@@ -3489,7 +3489,9 @@ git commit -m "test: add public search-to-download e2e flow"
 
 - [ ] **Step 1: Write `tests/e2e/admin-flow.spec.ts`**
 
-Precondition: the seeded admin from Task 4 (`ADMIN_EMAIL`/`ADMIN_PASSWORD`) exists in the dev database, and `tests/fixtures/sertifikat-test.zip` from Task 20 is present alongside a matching CSV fixture `tests/fixtures/sertifikat-test.csv`:
+Precondition: the seeded admin from Task 4 (`ADMIN_EMAIL`/`ADMIN_PASSWORD`) exists in the dev database, and `tests/fixtures/sertifikat-test.zip` from Task 20 is present alongside a matching CSV fixture `tests/fixtures/sertifikat-test.csv`.
+
+Notes (found during Task 27 — the actual committed test's inline comments carry the full detail; summarized here for the plan record): (1) `page.getByText('Masuk')` is a strict-mode violation against the login card's "Masuk Admin" heading — same class of issue as Task 26's `Cari` fix — use `page.getByRole('button', { name: 'Masuk' })`. (2) Default 5s `expect` timeouts are too tight for real credential-check and Blob-upload-plus-processing round trips — bump to 15s (login redirect) and 30s (ZIP processing) respectively. (3) A bare `getByText('Siap')` on the Penerima tab is ambiguous once Task 26's standing e2e fixture row (also `status='siap'`) coexists in the same unfiltered table — scope the assertion to this test's own row via `page.locator('tr', { hasText: 'Peserta ZIP E2E' })` first. (4) If a stray leftover row from earlier manual verification happens to share this fixture's `nik`+`nomor`-prefix, the ZIP's automatic match can become genuinely ambiguous (`matchFilenameToCandidate` requires exactly one candidate) — resolve deterministically via the Task 21 manual "Cocokkan" flow keyed on this fixture's own unique `nomor`, rather than deleting/mutating the stray row.
 
 ```
 nik,nama,kegiatan,tanggal_terbit,nomor,jam
