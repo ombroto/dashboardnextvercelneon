@@ -13,9 +13,7 @@ async function seed() {
     throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD must be set');
   }
 
-  // Loaded dynamically so `config()` above populates process.env.DATABASE_URL
-  // before src/db/index.ts reads it at module-evaluation time — a static
-  // top-of-file import would be hoisted ahead of the config() call.
+  // Load after config() so the seed process uses values from .env.local.
   const { db } = await import('./index');
   const { adminUsers } = await import('./schema');
 
