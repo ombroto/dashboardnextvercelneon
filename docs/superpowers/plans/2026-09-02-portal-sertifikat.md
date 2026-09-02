@@ -81,15 +81,17 @@ Note: `next-auth@beta` is the v5 line (App Router-native `auth()`/`handlers` API
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
 ```
+
+Note (added after Task 1/2 execution surfaced it): Next.js 16.3.4's own build/dev tooling automatically rewrites `tsconfig.json` on every `npm run build`/`npm run dev` to `"jsx": "react-jsx"` and adds the `.next/dev/types/**/*.ts` include entry shown above, regardless of what this file specifies — it is framework-managed, not a value this project's scaffold controls. The content above already reflects that auto-corrected state so later tasks aren't flagged for a "deviation" that is actually just Next.js re-asserting its own config on the first build/dev run.
 
 - [ ] **Step 4: Write `next.config.ts`**
 
