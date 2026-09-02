@@ -1,5 +1,13 @@
 @import "tailwindcss";
+@import "../styles/tokens/colors.css";
+@import "../styles/tokens/glass.css";
+@import "../styles/tokens/typography.css";
+@import "../styles/tokens/spacing.css";
 
 body {
   margin: 0;
+  background: var(--app-bg);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
 }

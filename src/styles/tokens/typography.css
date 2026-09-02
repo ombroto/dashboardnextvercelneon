@@ -1,0 +1,24 @@
+:root {
+  --font-display: -apple-system, BlinkMacSystemFont, var(--font-geist-sans), system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", var(--font-geist-mono), "Cascadia Code", monospace;
+
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 15px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 30px;
+  --text-3xl: 38px;
+  --text-4xl: 48px;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --tracking-tight: -0.014em;
+  --tracking-normal: -0.006em;
+}
