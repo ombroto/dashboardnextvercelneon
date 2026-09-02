@@ -3444,7 +3444,9 @@ export default defineConfig({
 
 - [ ] **Step 2: Write `tests/e2e/public-flow.spec.ts`**
 
-Precondition: a `sertifikat` row with `status='siap'` and a real reachable `fileUrl`, and its `kegiatan`, must exist in the dev database (insert one via `psql`/a Drizzle script pointed at the dev DB before running this, using NIK `8888888888888888`).
+Precondition: a `sertifikat` row with `status='siap'` and a real reachable `fileUrl`, and its `kegiatan`, must exist in the dev database (insert one via `psql`/a Drizzle script pointed at the dev DB before running this, using NIK `8888888888888888`) — and left in place afterward as a standing e2e fixture, not cleaned up like the integration tests' seed/cleanup pattern.
+
+Note (found during Task 26): the search button locator must be `page.getByRole('button', { name: 'Cari' })`, not `page.getByText('Cari')` — the home page's heading text is "Cari sertifikat Anda" (Task 12), and Playwright's `getByText` substring-matches by default, so `getByText('Cari')` hits both the heading and the button and throws a strict-mode violation. `getByRole` scopes to the button element specifically.
 
 ```ts
 import { test, expect } from '@playwright/test';
@@ -3452,7 +3454,7 @@ import { test, expect } from '@playwright/test';
 test('search by NIK, view results, download a ready certificate', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('NIK atau Nama Lengkap').fill('8888888888888888');
-  await page.getByText('Cari').click();
+  await page.getByRole('button', { name: 'Cari' }).click();
 
   await expect(page).toHaveURL(/\/hasil\/8888888888888888/);
   await expect(page.getByText('Siap')).toBeVisible();
