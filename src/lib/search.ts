@@ -57,7 +57,7 @@ export async function searchByName(name: string): Promise<PersonResult[]> {
     .from(sertifikat)
     .innerJoin(kegiatan, eq(sertifikat.kegiatanId, kegiatan.id))
     .where(ilike(sertifikat.nama, `%${escapeIlikePattern(trimmed)}%`))
-    .limit(20);
+    .orderBy(sertifikat.nik, sertifikat.id);
 
   const byNik = new Map<string, JoinedRow[]>();
   for (const row of rows) {
@@ -71,7 +71,7 @@ export async function searchByName(name: string): Promise<PersonResult[]> {
     const person = groupToPerson(nik, personRows);
     if (person) people.push(person);
   }
-  return people;
+  return people.slice(0, 20);
 }
 
 export interface CertificateDetail extends CertificateSummary {

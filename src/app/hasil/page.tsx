@@ -37,6 +37,7 @@ export default async function HasilByNamePage({
             <form key={i} action={selectPersonAction}>
               <input type="hidden" name="nama" value={nama} />
               <input type="hidden" name="index" value={i} />
+              <input type="hidden" name="expectedMaskedNik" value={maskNik(p.nik)} />
               <button
                 type="submit"
                 style={{ display: 'block', width: '100%', textAlign: 'left', padding: '14px 18px', borderRadius: 'var(--radius-md)', background: 'var(--glass-thin)', border: '1px solid var(--glass-border)', cursor: 'pointer', font: 'inherit', color: 'inherit' }}
