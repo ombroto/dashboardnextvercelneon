@@ -1,8 +1,13 @@
+import type { Metadata } from 'next';
 import { searchByName } from '@/lib/search';
 import { maskNik } from '@/lib/nik';
 import { redirect } from 'next/navigation';
 import { CertificateCard } from '@/components/search/CertificateCard';
 import { selectPersonAction } from './actions';
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function HasilByNamePage({
   searchParams,

@@ -1,6 +1,6 @@
 import { eq, ilike, or, and, asc, desc } from 'drizzle-orm';
 import { db } from '@/db';
-import { sertifikat, kegiatan } from '@/db/schema';
+import { sertifikat, kegiatan, unduhanLog } from '@/db/schema';
 
 export interface CertificateSummary {
   id: number;
@@ -179,4 +179,20 @@ export async function getAllSertifikat(filter: GetAllSertifikatFilter = {}): Pro
     status: r.sertifikat.status,
     unduhCount: r.sertifikat.unduhCount,
   }));
+}
+
+export interface UnduhanLogRow {
+  waktu: Date;
+  nama: string;
+  ip: string;
+}
+
+export async function getUnduhanLog(options: { limit?: number } = {}): Promise<UnduhanLogRow[]> {
+  const query = db
+    .select({ waktu: unduhanLog.waktu, nama: sertifikat.nama, ip: unduhanLog.ip })
+    .from(unduhanLog)
+    .innerJoin(sertifikat, eq(unduhanLog.sertifikatId, sertifikat.id))
+    .orderBy(desc(unduhanLog.waktu));
+
+  return options.limit ? query.limit(options.limit) : query;
 }

@@ -1,14 +1,8 @@
 import { NextResponse } from 'next/server';
-import { desc, eq } from 'drizzle-orm';
-import { db } from '@/db';
-import { unduhanLog, sertifikat } from '@/db/schema';
+import { getUnduhanLog } from '@/lib/search';
 
 export async function GET() {
-  const rows = await db
-    .select({ waktu: unduhanLog.waktu, nama: sertifikat.nama, ip: unduhanLog.ip })
-    .from(unduhanLog)
-    .innerJoin(sertifikat, eq(unduhanLog.sertifikatId, sertifikat.id))
-    .orderBy(desc(unduhanLog.waktu));
+  const rows = await getUnduhanLog();
 
   const header = 'waktu,nama,ip\n';
   const body = rows.map((r) => `${r.waktu.toISOString()},"${r.nama.replace(/"/g, '""')}",${r.ip}`).join('\n');

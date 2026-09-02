@@ -1,7 +1,15 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { searchByNik } from '@/lib/search';
 import { maskNik } from '@/lib/nik';
 import { CertificateCard } from '@/components/search/CertificateCard';
+
+// This page renders a real participant's name and certificates — it has no
+// business value being crawled/indexed, and shouldn't show up in search
+// results for someone's own name.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function HasilPage({ params }: { params: Promise<{ nik: string }> }) {
   const { nik } = await params;

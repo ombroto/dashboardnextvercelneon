@@ -1,8 +1,13 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getCertificateById } from '@/lib/search';
 import { maskNik } from '@/lib/nik';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function PratinjauPage({ params }: { params: Promise<{ sertifikatId: string }> }) {
   const { sertifikatId } = await params;

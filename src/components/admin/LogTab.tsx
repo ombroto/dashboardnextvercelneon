@@ -1,15 +1,8 @@
-import { desc, eq } from 'drizzle-orm';
-import { db } from '@/db';
-import { unduhanLog, sertifikat } from '@/db/schema';
+import { getUnduhanLog } from '@/lib/search';
 import { Button } from '@/components/ui/Button';
 
 export async function LogTab() {
-  const rows = await db
-    .select({ waktu: unduhanLog.waktu, nama: sertifikat.nama, ip: unduhanLog.ip })
-    .from(unduhanLog)
-    .innerJoin(sertifikat, eq(unduhanLog.sertifikatId, sertifikat.id))
-    .orderBy(desc(unduhanLog.waktu))
-    .limit(200);
+  const rows = await getUnduhanLog({ limit: 200 });
 
   return (
     <div style={{ marginTop: 18, borderRadius: 'var(--radius-xl)', background: 'var(--glass-regular)', border: '1px solid var(--glass-border)', overflow: 'hidden' }}>
