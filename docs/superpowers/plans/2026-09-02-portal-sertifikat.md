@@ -2521,12 +2521,14 @@ git commit -m "feat: add CSV import route with idempotent upsert"
 ### Task 19: Vercel Blob client-upload route
 
 **Files:**
-- Create: `src/app/api/blob/upload/route.ts`
+- Create: `src/app/api/admin/blob/upload/route.ts`
+
+This route has no auth check of its own — like every other admin API route since the Task 16 middleware fix (Task 18's finding), it relies entirely on `src/middleware.ts`'s `/api/admin/:path*` matcher for enforcement. It must therefore live under `/api/admin/`, not bare `/api/blob/` as an earlier draft of this plan had it — that path falls outside both middleware matchers (`/admin/:path*`, `/api/admin/:path*`) and would hand out signed Blob upload tokens to unauthenticated callers. Task 22's `handleUploadUrl` below has been updated to match.
 
 **Interfaces:**
-- Produces: a `handleUpload`-backed endpoint consumed directly by the client-side `upload()` calls in Task 22 (ZIP) and Task 23 (single-file replace).
+- Produces: a `handleUpload`-backed endpoint consumed directly by the client-side `upload()` calls in Task 22 (ZIP) and Task 23 (single-file replace), pointed at `/api/admin/blob/upload`.
 
-- [ ] **Step 1: Write `src/app/api/blob/upload/route.ts`**
+- [ ] **Step 1: Write `src/app/api/admin/blob/upload/route.ts`**
 
 ```ts
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
@@ -2934,7 +2936,7 @@ export function UploadTab() {
     setZipStatus('Mengunggah arsip...');
     const blob = await upload(file.name, file, {
       access: 'public',
-      handleUploadUrl: '/api/blob/upload',
+      handleUploadUrl: '/api/admin/blob/upload',
     });
 
     setZipStatus('Memproses arsip...');
