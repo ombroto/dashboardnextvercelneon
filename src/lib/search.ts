@@ -1,4 +1,4 @@
-import { eq, ilike, or, desc } from 'drizzle-orm';
+import { eq, ilike, or, and, asc, desc } from 'drizzle-orm';
 import { db } from '@/db';
 import { sertifikat, kegiatan } from '@/db/schema';
 
@@ -114,6 +114,17 @@ export async function deleteSertifikat(id: number): Promise<void> {
   await db.delete(sertifikat).where(eq(sertifikat.id, id));
 }
 
+export async function replaceSertifikatFile(id: number, blobUrl: string, fileSize: number): Promise<void> {
+  const [row] = await db.select().from(sertifikat).where(eq(sertifikat.id, id));
+  if (row?.fileUrl) {
+    await del(row.fileUrl).catch(() => undefined);
+  }
+  await db
+    .update(sertifikat)
+    .set({ fileUrl: blobUrl, fileSize, status: 'siap', updatedAt: new Date() })
+    .where(eq(sertifikat.id, id));
+}
+
 export interface AdminSertifikatRow {
   id: number;
   nama: string;
@@ -125,13 +136,38 @@ export interface AdminSertifikatRow {
   unduhCount: number;
 }
 
-export async function getAllSertifikat(filter: { q?: string } = {}): Promise<AdminSertifikatRow[]> {
+export interface GetAllSertifikatFilter {
+  q?: string;
+  status?: 'siap' | 'belum';
+  sort?: 'nama' | 'nik' | 'tanggal';
+  dir?: 'asc' | 'desc';
+}
+
+const SORT_COLUMNS = {
+  nama: sertifikat.nama,
+  nik: sertifikat.nik,
+  tanggal: kegiatan.tanggalTerbit,
+} as const;
+
+export async function getAllSertifikat(filter: GetAllSertifikatFilter = {}): Promise<AdminSertifikatRow[]> {
+  const conditions = [];
+  if (filter.q) {
+    const pattern = `%${escapeIlikePattern(filter.q)}%`;
+    conditions.push(or(ilike(sertifikat.nama, pattern), ilike(sertifikat.nik, pattern), ilike(sertifikat.nomor, pattern)));
+  }
+  if (filter.status) {
+    conditions.push(eq(sertifikat.status, filter.status));
+  }
+
+  const sortColumn = SORT_COLUMNS[filter.sort ?? 'tanggal'] ?? sertifikat.createdAt;
+  const orderExpr = filter.sort ? (filter.dir === 'desc' ? desc(sortColumn) : asc(sortColumn)) : desc(sertifikat.createdAt);
+
   const rows = await db
     .select({ sertifikat, kegiatan })
     .from(sertifikat)
     .innerJoin(kegiatan, eq(sertifikat.kegiatanId, kegiatan.id))
-    .where(filter.q ? or(ilike(sertifikat.nama, `%${filter.q}%`), ilike(sertifikat.nik, `%${filter.q}%`), ilike(sertifikat.nomor, `%${filter.q}%`)) : undefined)
-    .orderBy(desc(sertifikat.createdAt));
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(orderExpr);
 
   return rows.map((r) => ({
     id: r.sertifikat.id,

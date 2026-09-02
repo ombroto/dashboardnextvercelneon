@@ -11,6 +11,7 @@ export default defineConfig({
     // too tight once many integration test files run concurrently against it,
     // producing a documented, reproducible timeout flake unrelated to test logic.
     testTimeout: 30000,
+    hookTimeout: 30000,
     // tests/e2e/**/*.spec.ts are Playwright specs (run via `npm run test:e2e`), but
     // Vitest's default include glob also matches `*.spec.ts` — without this exclude,
     // `npm run test` tries to execute them as Vitest tests and fails immediately with

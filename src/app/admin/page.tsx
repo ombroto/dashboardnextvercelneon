@@ -7,9 +7,9 @@ import { LogTab } from '@/components/admin/LogTab';
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; q?: string }>;
+  searchParams: Promise<{ tab?: string; q?: string; status?: 'siap' | 'belum'; sort?: 'nama' | 'nik' | 'tanggal'; dir?: 'asc' | 'desc' }>;
 }) {
-  const { tab = 'unggah', q } = await searchParams;
+  const { tab = 'unggah', q, status, sort, dir } = await searchParams;
 
   return (
     <main style={{ minHeight: '100vh', padding: '20px 32px 56px' }}>
@@ -18,7 +18,7 @@ export default async function AdminPage({
         <StatsCards />
         <AdminTabs current={tab} />
         {tab === 'unggah' && <UploadTab />}
-        {tab === 'penerima' && <PenerimaTable q={q} />}
+        {tab === 'penerima' && <PenerimaTable q={q} status={status} sort={sort} dir={dir} />}
         {tab === 'log' && <LogTab />}
       </div>
     </main>
