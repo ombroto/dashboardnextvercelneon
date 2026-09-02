@@ -2246,19 +2246,28 @@ export const { GET, POST } = handlers;
 
 - [ ] **Step 5: Write `src/middleware.ts`**
 
+This must guard both the admin **pages** (`/admin/*`, redirect to `/admin/login`) and the admin **API routes** (`/api/admin/*`, return 401 JSON — every admin API route from Task 18 onward lives under this prefix and has no auth check of its own; the middleware is their only enforcement point, so the matcher must cover both):
+
 ```ts
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 
 export default auth((req) => {
-  const isLoginPage = req.nextUrl.pathname === '/admin/login';
-  if (req.nextUrl.pathname.startsWith('/admin') && !isLoginPage && !req.auth) {
+  const { pathname } = req.nextUrl;
+  const isLoginPage = pathname === '/admin/login';
+  const isProtectedPage = pathname.startsWith('/admin') && !isLoginPage;
+  const isProtectedApi = pathname.startsWith('/api/admin');
+
+  if ((isProtectedPage || isProtectedApi) && !req.auth) {
+    if (isProtectedApi) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     return NextResponse.redirect(new URL('/admin/login', req.nextUrl));
   }
 });
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/api/admin/:path*'],
 };
 ```
 
@@ -2378,7 +2387,7 @@ git commit -m "feat: add admin login page"
 - Test: `tests/integration/import-csv.test.ts`
 
 **Interfaces:**
-- Consumes: `parseParticipantCsv` from `src/lib/csv.ts` (Task 6); `db`, `kegiatan`, `sertifikat` from `src/db` (Task 3); `auth` from `src/lib/auth.ts` (Task 16).
+- Consumes: `parseParticipantCsv` from `src/lib/csv.ts` (Task 6); `db`, `kegiatan`, `sertifikat` from `src/db` (Task 3). Authorization is enforced by `src/middleware.ts`'s `/api/admin/:path*` matcher (Task 16) — this route does not call `auth()` itself.
 
 - [ ] **Step 1: Write the failing test**
 
