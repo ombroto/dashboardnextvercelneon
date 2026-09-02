@@ -65,3 +65,33 @@ export async function searchByName(name: string): Promise<PersonResult[]> {
   }
   return people;
 }
+
+export interface CertificateDetail extends CertificateSummary {
+  nama: string;
+  nik: string;
+  fileUrl: string | null;
+  fileSize: number | null;
+}
+
+export async function getCertificateById(id: number): Promise<CertificateDetail | null> {
+  const rows = await db
+    .select({ sertifikat, kegiatan })
+    .from(sertifikat)
+    .innerJoin(kegiatan, eq(sertifikat.kegiatanId, kegiatan.id))
+    .where(eq(sertifikat.id, id));
+
+  if (rows.length === 0) return null;
+  const { sertifikat: s, kegiatan: k } = rows[0];
+  return {
+    id: s.id,
+    nomor: s.nomor,
+    kegiatanNama: k.nama,
+    tanggalTerbit: k.tanggalTerbit,
+    jumlahJp: k.jumlahJp,
+    status: s.status,
+    nama: s.nama,
+    nik: s.nik,
+    fileUrl: s.fileUrl,
+    fileSize: s.fileSize,
+  };
+}

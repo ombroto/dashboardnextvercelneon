@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { db } from '@/db';
 import { kegiatan, sertifikat } from '@/db/schema';
-import { searchByNik, searchByName } from '@/lib/search';
+import { searchByNik, searchByName, getCertificateById } from '@/lib/search';
 import { eq } from 'drizzle-orm';
 
 describe('search', () => {
@@ -40,5 +40,13 @@ describe('search', () => {
 
   it('returns null for an unknown NIK', async () => {
     expect(await searchByNik('0000000000000000')).toBeNull();
+  });
+
+  it('fetches a single certificate by id with file info', async () => {
+    const person = await searchByNik('1111111111111111');
+    const certId = person!.certificates[0].id;
+    const detail = await getCertificateById(certId);
+    expect(detail?.nama).toBe('Nama Uji Coba');
+    expect(detail?.fileUrl).toBeNull();
   });
 });
