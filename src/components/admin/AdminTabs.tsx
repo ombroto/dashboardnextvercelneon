@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Tabs } from '@/components/ui/Tabs';
 
-export function AdminTabs({ current }: { current: string }) {
+export function AdminTabs({ current, penerimaCount }: { current: string; penerimaCount: number }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -16,9 +16,9 @@ export function AdminTabs({ current }: { current: string }) {
   return (
     <Tabs
       items={[
-        { key: 'unggah', label: 'Unggah' },
-        { key: 'penerima', label: 'Penerima' },
-        { key: 'log', label: 'Log' },
+        { key: 'unggah', label: 'Unggah Berkas', icon: 'upload' },
+        { key: 'penerima', label: 'Data Penerima', badge: penerimaCount },
+        { key: 'log', label: 'Log Unduhan' },
       ]}
       value={current}
       onChange={setTab}

@@ -1,6 +1,10 @@
+import { Icon } from './Icon';
+
 export interface TabItem {
   key: string;
   label: string;
+  icon?: string;
+  badge?: number;
 }
 
 export function Tabs({ items, value, onChange }: { items: TabItem[]; value: string; onChange: (key: string) => void }) {
@@ -14,6 +18,9 @@ export function Tabs({ items, value, onChange }: { items: TabItem[]; value: stri
             type="button"
             onClick={() => onChange(item.key)}
             style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 7,
               padding: '8px 18px',
               borderRadius: 'var(--radius-pill)',
               border: 'none',
@@ -25,7 +32,27 @@ export function Tabs({ items, value, onChange }: { items: TabItem[]; value: stri
               boxShadow: active ? 'var(--shadow-xs)' : 'none',
             }}
           >
+            {item.icon && <Icon name={item.icon} size={15} />}
             {item.label}
+            {typeof item.badge === 'number' && (
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: 20,
+                  height: 20,
+                  padding: '0 6px',
+                  borderRadius: 'var(--radius-pill)',
+                  background: active ? 'rgba(0,74,147,0.12)' : 'rgba(11,22,38,0.08)',
+                  color: active ? 'var(--ut-blue-700)' : 'var(--ink-500)',
+                  fontSize: 'var(--text-2xs)',
+                  fontWeight: 700,
+                }}
+              >
+                {item.badge}
+              </span>
+            )}
           </button>
         );
       })}

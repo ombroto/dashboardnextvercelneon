@@ -5,6 +5,7 @@ import { PenerimaTable } from '@/components/admin/PenerimaTable';
 import { LogTab } from '@/components/admin/LogTab';
 import { Button } from '@/components/ui/Button';
 import { logoutAction } from '@/app/admin/actions';
+import { countAllSertifikat } from '@/lib/search';
 
 export default async function AdminPage({
   searchParams,
@@ -12,6 +13,7 @@ export default async function AdminPage({
   searchParams: Promise<{ tab?: string; q?: string; status?: 'siap' | 'belum'; sort?: 'nama' | 'nik' | 'tanggal'; dir?: 'asc' | 'desc' }>;
 }) {
   const { tab = 'unggah', q, status, sort, dir } = await searchParams;
+  const penerimaCount = await countAllSertifikat();
 
   return (
     <main style={{ minHeight: '100vh', padding: '20px 32px 56px' }}>
@@ -26,7 +28,7 @@ export default async function AdminPage({
           </form>
         </div>
         <StatsCards />
-        <AdminTabs current={tab} />
+        <AdminTabs current={tab} penerimaCount={penerimaCount} />
         {tab === 'unggah' && <UploadTab />}
         {tab === 'penerima' && <PenerimaTable q={q} status={status} sort={sort} dir={dir} />}
         {tab === 'log' && <LogTab />}

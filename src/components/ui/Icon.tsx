@@ -1,4 +1,22 @@
-import { Search, Mail, KeyRound, Trash2, RefreshCw, Lock, ShieldCheck, IdCard, FileCheck2, LifeBuoy, LogOut } from 'lucide-react';
+import {
+  Search,
+  Mail,
+  KeyRound,
+  Trash2,
+  RefreshCw,
+  Lock,
+  ShieldCheck,
+  IdCard,
+  FileCheck2,
+  LifeBuoy,
+  LogOut,
+  Users,
+  TriangleAlert,
+  Download,
+  Upload,
+  UploadCloud,
+  CircleAlert,
+} from 'lucide-react';
 
 // Explicit map of only the icons actually used across the codebase (checked via
 // `icon="..."` usages in Input/IconButton consumers). A namespace import
@@ -18,6 +36,12 @@ const iconMap = {
   'file-check-2': FileCheck2,
   'life-buoy': LifeBuoy,
   'log-out': LogOut,
+  users: Users,
+  'triangle-alert': TriangleAlert,
+  download: Download,
+  upload: Upload,
+  'upload-cloud': UploadCloud,
+  'circle-alert': CircleAlert,
 } as const;
 
 type IconName = keyof typeof iconMap;
