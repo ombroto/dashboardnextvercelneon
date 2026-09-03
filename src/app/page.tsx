@@ -5,8 +5,8 @@ const FEATURES = [
   {
     icon: 'id-card',
     color: 'var(--ut-blue-600)',
-    title: 'Satu Kunci Pencarian',
-    body: 'NIK memberi hasil paling tepat; nama boleh sebagian.',
+    title: 'Dua Langkah Mudah',
+    body: 'Pilih kegiatan diklat dari daftar, lalu masukkan NIK Anda.',
   },
   {
     icon: 'file-check-2',
@@ -59,7 +59,7 @@ export default async function HomePage({
           Cari sertifikat Anda
         </h1>
         <p style={{ margin: '0 auto', maxWidth: 520, fontSize: 'var(--text-base)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-          Masukkan NIK atau nama lengkap sesuai data pendaftaran. Sertifikat yang tersedia akan langsung dapat diunduh dalam format PDF.
+          Pilih kegiatan diklat Anda, lalu masukkan NIK sesuai data pendaftaran. Sertifikat yang tersedia akan langsung dapat diunduh dalam format PDF.
         </p>
       </div>
 

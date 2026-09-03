@@ -11,12 +11,19 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function HasilPage({ params }: { params: Promise<{ nik: string }> }) {
+export default async function HasilPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ nik: string }>;
+  searchParams: Promise<{ kegiatanId?: string }>;
+}) {
   const { nik } = await params;
-  const person = await searchByNik(nik);
+  const { kegiatanId } = await searchParams;
+  const person = await searchByNik(nik, kegiatanId ? Number(kegiatanId) : undefined);
 
   if (!person) {
-    redirect('/?error=' + encodeURIComponent('Data sertifikat tidak ditemukan. Periksa kembali NIK yang dimasukkan.'));
+    redirect('/?error=' + encodeURIComponent('Data sertifikat tidak ditemukan. Periksa kembali kegiatan dan NIK yang dimasukkan.'));
   }
 
   return (

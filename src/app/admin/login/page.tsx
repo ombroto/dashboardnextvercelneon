@@ -48,9 +48,9 @@ export default function AdminLoginPage() {
         >
           <Icon name="lock" size={20} />
         </div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', fontWeight: 'var(--weight-bold)', letterSpacing: 'var(--tracking-tight)', margin: '0 0 6px' }}>Masuk Admin</h2>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)', fontWeight: 'var(--weight-bold)', letterSpacing: 'var(--tracking-tight)', margin: '0 0 6px' }}>Masuk</h2>
         <p style={{ margin: '0 0 20px', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-          Khusus pengelola data sertifikat Sekretariat Diklat BPIP.
+          Khusus pengguna terdaftar di Sekretariat Diklat BPIP.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <Input label="Email Institusi" icon="mail" placeholder="nama@bpip.go.id" value={email} onChange={setEmail} />

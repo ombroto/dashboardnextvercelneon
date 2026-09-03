@@ -35,17 +35,39 @@ function groupToPerson(nik: string, rows: JoinedRow[]): PersonResult | null {
   };
 }
 
-export async function searchByNik(nik: string): Promise<PersonResult | null> {
+export async function searchByNik(nik: string, kegiatanId?: number): Promise<PersonResult | null> {
+  const conditions = [eq(sertifikat.nik, nik)];
+  if (kegiatanId) {
+    conditions.push(eq(sertifikat.kegiatanId, kegiatanId));
+  }
+
   const rows = await db
     .select({ sertifikat, kegiatan })
     .from(sertifikat)
     .innerJoin(kegiatan, eq(sertifikat.kegiatanId, kegiatan.id))
-    .where(eq(sertifikat.nik, nik));
+    .where(and(...conditions));
   return groupToPerson(nik, rows);
 }
 
 function escapeIlikePattern(value: string): string {
   return value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+}
+
+export interface KegiatanOption {
+  id: number;
+  nama: string;
+}
+
+export async function searchKegiatanByName(name: string): Promise<KegiatanOption[]> {
+  const trimmed = name.trim();
+  if (trimmed.length < 4) return [];
+
+  return db
+    .select({ id: kegiatan.id, nama: kegiatan.nama })
+    .from(kegiatan)
+    .where(ilike(kegiatan.nama, `%${escapeIlikePattern(trimmed)}%`))
+    .orderBy(kegiatan.nama)
+    .limit(10);
 }
 
 export async function searchByName(name: string): Promise<PersonResult[]> {

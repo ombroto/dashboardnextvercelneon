@@ -208,8 +208,8 @@
       <div style="width:44px; height:44px; border-radius:14px; background:linear-gradient(150deg, var(--ut-blue-500), var(--ut-blue-800)); color:#fff; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
         <x-import component-from-global-scope="UTGlassDesignSystem_125d14.Icon" name="lock" size="20" hint-size="20px,20px"></x-import>
       </div>
-      <h2 style="font-family:var(--font-display); font-size:var(--text-2xl); font-weight:var(--weight-bold); letter-spacing:var(--tracking-tight); margin:0 0 6px;">Masuk Admin</h2>
-      <p style="margin:0 0 20px; font-size:var(--text-sm); color:var(--text-secondary); line-height:1.5;">Khusus pengelola data sertifikat Sekretariat Diklat BPIP.</p>
+      <h2 style="font-family:var(--font-display); font-size:var(--text-2xl); font-weight:var(--weight-bold); letter-spacing:var(--tracking-tight); margin:0 0 6px;">Masuk</h2>
+      <p style="margin:0 0 20px; font-size:var(--text-sm); color:var(--text-secondary); line-height:1.5;">Khusus pengguna terdaftar di Sekretariat Diklat BPIP.</p>
       <div style="display:flex; flex-direction:column; gap:14px;">
         <x-import component-from-global-scope="UTGlassDesignSystem_125d14.Input" label="Email Institusi" icon="mail" placeholder="nama@bpip.go.id" value="{{ adminEmail }}" onChange="{{ onAdminEmail }}" hint-size="100%,68px"></x-import>
         <x-import component-from-global-scope="UTGlassDesignSystem_125d14.Input" label="Kata Sandi" icon="key-round" type="password" placeholder="••••••••" value="{{ adminPass }}" onChange="{{ onAdminPass }}" onKeyDown="{{ onLoginKey }}" hint-size="100%,68px"></x-import>

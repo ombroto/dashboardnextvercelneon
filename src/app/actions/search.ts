@@ -3,16 +3,12 @@
 import { redirect } from 'next/navigation';
 import { normalizeNik } from '@/lib/nik';
 
-export async function searchAction(rawQuery: string): Promise<void> {
-  const query = rawQuery.trim();
-  if (!query) {
-    redirect('/?error=' + encodeURIComponent('Masukkan NIK atau nama terlebih dahulu.'));
+export async function searchAction(kegiatanId: number, rawNik: string): Promise<void> {
+  const nik = normalizeNik(rawNik);
+
+  if (!kegiatanId || nik.length < 10) {
+    redirect('/?error=' + encodeURIComponent('Pilih kegiatan diklat dan masukkan NIK yang valid.'));
   }
 
-  const digits = normalizeNik(query);
-  if (digits.length >= 10) {
-    redirect(`/hasil/${digits}`);
-  }
-
-  redirect(`/hasil?nama=${encodeURIComponent(query)}`);
+  redirect(`/hasil/${nik}?kegiatanId=${kegiatanId}`);
 }

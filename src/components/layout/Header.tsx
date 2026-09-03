@@ -79,7 +79,7 @@ export function Header() {
             boxShadow: isAdminSection ? 'var(--shadow-xs)' : 'none',
           }}
         >
-          Admin
+          Masuk
         </Link>
       </div>
     </header>
