@@ -6,6 +6,7 @@ export interface ButtonProps {
   size?: ButtonSize;
   block?: boolean;
   type?: 'button' | 'submit';
+  disabled?: boolean;
   onClick?: () => void;
   children: React.ReactNode;
 }
@@ -35,10 +36,11 @@ const VARIANT_STYLES: Record<ButtonVariant, React.CSSProperties> = {
   },
 };
 
-export function Button({ variant = 'primary', size = 'md', block, type = 'button', onClick, children }: ButtonProps) {
+export function Button({ variant = 'primary', size = 'md', block, type = 'button', disabled, onClick, children }: ButtonProps) {
   return (
     <button
       type={type}
+      disabled={disabled}
       onClick={onClick}
       style={{
         ...VARIANT_STYLES[variant],
@@ -49,7 +51,8 @@ export function Button({ variant = 'primary', size = 'md', block, type = 'button
         fontFamily: 'var(--font-sans)',
         fontWeight: 'var(--weight-semibold)',
         fontSize: 'var(--text-sm)',
-        cursor: 'pointer',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.6 : 1,
       }}
     >
       {children}
