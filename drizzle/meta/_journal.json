@@ -15,6 +15,13 @@
       "when": 1788537607619,
       "tag": "0001_futuristic_ma_gnuci",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1725451200000,
+      "tag": "0002_kegiatan_wizard",
+      "breakpoints": true
     }
   ]
 }

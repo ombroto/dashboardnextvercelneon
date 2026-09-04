@@ -2,6 +2,8 @@ import { pgTable, serial, text, varchar, integer, timestamp, pgEnum, date, index
 import { sql } from 'drizzle-orm';
 
 export const sertifikatStatus = pgEnum('sertifikat_status', ['siap', 'belum']);
+export const kegiatanSegmen = pgEnum('kegiatan_segmen', ['Aparatur Negara', 'Orsospol', 'KML', 'Purnapaskibraka']);
+export const modePenyelenggaraan = pgEnum('mode_penyelenggaraan', ['Luring', 'Daring', 'Hybrid']);
 
 export const adminUsers = pgTable('admin_users', {
   id: serial('id').primaryKey(),
@@ -14,8 +16,15 @@ export const adminUsers = pgTable('admin_users', {
 export const kegiatan = pgTable('kegiatan', {
   id: serial('id').primaryKey(),
   nama: text('nama').notNull(),
-  tanggalTerbit: date('tanggal_terbit').notNull(),
   jumlahJp: integer('jumlah_jp').notNull(),
+  tahun: integer('tahun'),
+  segmen: kegiatanSegmen('segmen'),
+  tanggalMulai: date('tanggal_mulai'),
+  tanggalSelesai: date('tanggal_selesai'),
+  provinsi: text('provinsi'),
+  kabupatenKota: text('kabupaten_kota'),
+  modePenyelenggaraan: modePenyelenggaraan('mode_penyelenggaraan'),
+  logoUrl: text('logo_url'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -29,7 +38,9 @@ export const sertifikat = pgTable(
     nama: text('nama').notNull(),
     nik: varchar('nik', { length: 16 }).notNull(),
     email: text('email'),
-    nomor: text('nomor').notNull().unique(),
+    provinsi: text('provinsi'),
+    kabupatenKota: text('kabupaten_kota'),
+    asalInstansi: text('asal_instansi'),
     fileUrl: text('file_url'),
     fileSize: integer('file_size'),
     status: sertifikatStatus('status').notNull().default('belum'),
