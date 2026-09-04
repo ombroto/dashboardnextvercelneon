@@ -9,7 +9,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       body,
       request,
       onBeforeGenerateToken: async () => ({
-        allowedContentTypes: ['application/zip', 'application/pdf'],
+        allowedContentTypes: ['application/zip', 'application/pdf', 'image/jpeg', 'image/png'],
         addRandomSuffix: true,
       }),
       onUploadCompleted: async () => {
