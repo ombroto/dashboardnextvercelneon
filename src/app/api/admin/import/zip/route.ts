@@ -6,7 +6,7 @@ import { put } from '@vercel/blob';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { sertifikat } from '@/db/schema';
-import { parseManifestCsv, matchFilenameToCandidate, type MatchCandidate } from '@/lib/zip-match';
+import { parseManifestCsv, matchEmailToCandidate, pickFirstFileAlphabetically, type MatchCandidate } from '@/lib/zip-match';
 
 export const maxDuration = 300;
 
@@ -14,11 +14,9 @@ export const maxDuration = 300;
 // the archive's own Blob URL, instead of reading the archive as one sequential
 // stream. This buys two things a sequential parse can't: (1) the ZIP's central
 // directory (a small index at the end of the file) tells us every entry's name
-// and size upfront, so manifest.csv can be found and read regardless of where it
-// sits in the archive — a sequential parser only knows what it's seen so far, so
-// a manifest.csv appearing after some PDFs would be invisible to matching logic
-// for those earlier entries; (2) each PDF can then be fetched and piped straight
-// to its destination Blob key one at a time via `entry.stream()`, so memory use
+// and size upfront, so manifest.csv can be found regardless of where it sits in
+// the archive; (2) each matched file can then be fetched and piped straight to
+// its destination Blob key one at a time via `entry.stream()`, so memory use
 // no longer scales with the archive's total size or entry count.
 function blobRangeSource(url: string) {
   return {
@@ -40,6 +38,17 @@ function blobRangeSource(url: string) {
   };
 }
 
+// A participant's folder is the top-level path segment: "folder/file.pdf" ->
+// "folder". Files nested deeper than one level are intentionally not treated
+// as candidates -- the expected shape is exactly one level of folder, then
+// the certificate file directly inside it.
+function directChildFilesOfFolder(files: { path: string; type: string }[], folder: string): string[] {
+  const prefix = `${folder}/`;
+  return files
+    .filter((f) => f.type === 'File' && f.path.startsWith(prefix) && !f.path.slice(prefix.length).includes('/'))
+    .map((f) => f.path);
+}
+
 export async function POST(request: Request) {
   const { blobUrl } = (await request.json()) as { blobUrl: string };
 
@@ -48,37 +57,32 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Arsip tidak dapat dibaca' }, { status: 400 });
   }
 
-  const candidates: MatchCandidate[] = await db.select({ id: sertifikat.id, nik: sertifikat.nik, nomor: sertifikat.nomor }).from(sertifikat);
-
-  // path.basename() strips any directory component (including a crafted `../`
-  // traversal) from an archive entry's path before it's ever used as a Blob key
-  // or matched against a candidate filename, so a malicious archive can't write
-  // outside the intended Blob key prefixes, and PDFs nested in subdirectories
-  // are matched the same way top-level ones are instead of always landing in
-  // "unmatched" (a nested path never equals `${nik}_${prefix}.pdf`, which has no `/`).
   const manifestEntry = directory.files.find((f) => path.basename(f.path).toLowerCase() === 'manifest.csv');
-  const manifest = manifestEntry ? parseManifestCsv((await manifestEntry.buffer()).toString('utf-8')) : null;
+  if (!manifestEntry) {
+    return NextResponse.json({ error: 'manifest.csv tidak ditemukan di akar arsip' }, { status: 400 });
+  }
+  const manifest = parseManifestCsv((await manifestEntry.buffer()).toString('utf-8'));
 
-  const pdfEntries = directory.files.filter((f) => path.basename(f.path).toLowerCase().endsWith('.pdf'));
+  const candidates: MatchCandidate[] = await db.select({ id: sertifikat.id, email: sertifikat.email }).from(sertifikat);
 
-  const unmatched: { filename: string; blobUrl: string; fileSize: number }[] = [];
+  const unmatched: { folder: string; email: string; blobUrl: string; fileSize: number }[] = [];
+  const errors: string[] = [];
   let matched = 0;
 
-  for (const entry of pdfEntries) {
-    const filename = path.basename(entry.path);
-    let targetId: number | null = null;
+  for (const row of manifest) {
+    const candidateFiles = directChildFilesOfFolder(directory.files, row.folder);
+    const filePath = pickFirstFileAlphabetically(candidateFiles);
 
-    if (manifest) {
-      const manifestMatch = manifest.find((m) => m.file === filename);
-      if (manifestMatch) {
-        const candidate = candidates.find((c) => c.nik === manifestMatch.nik && c.nomor === manifestMatch.nomor);
-        targetId = candidate?.id ?? null;
-      }
-    } else {
-      targetId = matchFilenameToCandidate(filename, candidates);
+    if (!filePath) {
+      errors.push(`Folder "${row.folder}" tidak ditemukan atau kosong di dalam arsip.`);
+      continue;
     }
 
-    const key = targetId === null ? `unmatched/${filename}` : `sertifikat/${targetId}-${filename}`;
+    const entry = directory.files.find((f) => f.path === filePath)!;
+    const filename = path.basename(filePath);
+    const targetId = matchEmailToCandidate(row.email, candidates);
+
+    const key = targetId === null ? `unmatched/${row.folder}-${filename}` : `sertifikat/${targetId}-${filename}`;
     const blob = await put(key, entry.stream(), {
       access: 'public',
       addRandomSuffix: true,
@@ -87,7 +91,7 @@ export async function POST(request: Request) {
     const fileSize = entry.uncompressedSize;
 
     if (targetId === null) {
-      unmatched.push({ filename, blobUrl: blob.url, fileSize });
+      unmatched.push({ folder: row.folder, email: row.email, blobUrl: blob.url, fileSize });
       continue;
     }
 
@@ -99,5 +103,5 @@ export async function POST(request: Request) {
     matched += 1;
   }
 
-  return NextResponse.json({ matched, unmatched });
+  return NextResponse.json({ matched, unmatched, errors });
 }

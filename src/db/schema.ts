@@ -28,6 +28,7 @@ export const sertifikat = pgTable(
       .references(() => kegiatan.id, { onDelete: 'cascade' }),
     nama: text('nama').notNull(),
     nik: varchar('nik', { length: 16 }).notNull(),
+    email: text('email'),
     nomor: text('nomor').notNull().unique(),
     fileUrl: text('file_url'),
     fileSize: integer('file_size'),
@@ -39,6 +40,7 @@ export const sertifikat = pgTable(
   (table) => [
     index('sertifikat_nik_idx').on(table.nik),
     index('sertifikat_nama_lower_idx').on(sql`lower(${table.nama})`),
+    index('sertifikat_email_lower_idx').on(sql`lower(${table.email})`),
   ]
 );
 

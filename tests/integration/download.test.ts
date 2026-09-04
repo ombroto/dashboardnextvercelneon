@@ -20,7 +20,7 @@ describe('download route', () => {
         kegiatanId,
         nama: 'Penerima Uji',
         nik: '2222222222222222',
-        nomor: 'TEST-0002/UJI/2026',
+        nomor: 'TEST-DL-0002/UJI/2026',
         status: 'siap',
         fileUrl: 'https://example.com/fake.pdf',
       })

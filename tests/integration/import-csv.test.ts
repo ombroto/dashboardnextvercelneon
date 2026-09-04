@@ -4,8 +4,8 @@ import { db } from '@/db';
 import { kegiatan, sertifikat } from '@/db/schema';
 import { POST } from '@/app/api/admin/import/csv/route';
 
-const CSV = `nik,nama,kegiatan,tanggal_terbit,nomor,jam
-4444444444444444,Peserta CSV Satu,Uji Import CSV,2026-02-01,TEST-CSV-0001/UJI/2026,16`;
+const CSV = `nik,nama,email,kegiatan,tanggal_terbit,nomor,jam
+4444444444444444,Peserta CSV Satu,peserta.csv.satu@example.com,Uji Import CSV,2026-02-01,TEST-CSV-0001/UJI/2026,16`;
 
 describe('CSV import route', () => {
   afterEach(async () => {
@@ -28,6 +28,7 @@ describe('CSV import route', () => {
     const rows = await db.select().from(sertifikat).where(eq(sertifikat.nomor, 'TEST-CSV-0001/UJI/2026'));
     expect(rows).toHaveLength(1);
     expect(rows[0].status).toBe('belum');
+    expect(rows[0].email).toBe('peserta.csv.satu@example.com');
   });
 
   it('does not clobber an already-siap row on re-import', async () => {

@@ -24,7 +24,14 @@ describe('ZIP import route', () => {
     kegiatanId = k.id;
     const [s] = await db
       .insert(sertifikat)
-      .values({ kegiatanId, nama: 'Peserta ZIP', nik: '5555555555555555', nomor: 'SK-E2E-UNIQUE-9001/UJI/2026', status: 'belum' })
+      .values({
+        kegiatanId,
+        nama: 'Peserta ZIP',
+        nik: '5555555555555555',
+        email: 'e2e.unique@example.com',
+        nomor: 'SK-E2E-UNIQUE-9001/UJI/2026',
+        status: 'belum',
+      })
       .returning();
     certId = s.id;
 
@@ -37,7 +44,7 @@ describe('ZIP import route', () => {
     await db.delete(kegiatan).where(eq(kegiatan.id, kegiatanId));
   });
 
-  it('matches the PDF by nik+nomor-prefix filename and marks it siap', async () => {
+  it('matches the folder by manifest email and marks the participant siap', async () => {
     const request = new Request('http://localhost/api/admin/import/zip', {
       method: 'POST',
       body: JSON.stringify({ blobUrl: archiveBlobUrl }),
@@ -47,7 +54,8 @@ describe('ZIP import route', () => {
 
     expect(body.matched).toBe(1);
     expect(body.unmatched).toHaveLength(1);
-    expect(body.unmatched[0].filename).toBe('unrelated-file.pdf');
+    expect(body.unmatched[0].folder).toBe('peserta-tidak-cocok');
+    expect(body.unmatched[0].email).toBe('tidak-ada@example.com');
     expect(body.unmatched[0].blobUrl).toMatch(/^https:\/\//);
     expect(body.unmatched[0].fileSize).toBeGreaterThan(0);
 

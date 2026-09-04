@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 
 interface UnmatchedFile {
-  filename: string;
+  folder: string;
+  email: string;
   blobUrl: string;
   fileSize: number;
 }
@@ -74,7 +75,7 @@ export function UploadTab() {
   }
 
   async function handleCocokkan(file: UnmatchedFile) {
-    const nomor = window.prompt(`Masukkan nomor sertifikat untuk berkas "${file.filename}":`);
+    const nomor = window.prompt(`Folder "${file.folder}" (${file.email}) tidak cocok dengan peserta manapun.\nMasukkan nomor sertifikat tujuan:`);
     if (!nomor) return;
 
     const response = await fetch('/api/admin/import/match', {
@@ -87,7 +88,7 @@ export function UploadTab() {
       return;
     }
 
-    setUnmatched((prev) => prev.filter((u) => u.filename !== file.filename));
+    setUnmatched((prev) => prev.filter((u) => u.folder !== file.folder));
     setMatched((prev) => (prev ?? 0) + 1);
   }
 
@@ -108,8 +109,8 @@ export function UploadTab() {
           </div>
           <p style={{ margin: '4px 0 0', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 560 }}>
             Impor daftar penerima lebih dulu — kolom{' '}
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>nik,nama,kegiatan,tanggal_terbit,nomor,jam</span>. Data inilah yang
-            dicari peserta dan menjadi acuan pencocokan PDF.
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>nik,nama,email,kegiatan,tanggal_terbit,nomor,jam</span>. Kolom
+            email inilah yang menjadi acuan pencocokan berkas ZIP pada Langkah 2.
           </p>
           {csvNote && <div style={{ marginTop: 10, fontSize: 'var(--text-xs)', color: 'var(--ut-green)', fontWeight: 600 }}>{csvNote}</div>}
         </div>
@@ -177,9 +178,9 @@ export function UploadTab() {
               {unmatched.length > 0 && (
                 <div style={{ padding: '6px 18px 14px' }}>
                   {unmatched.map((u) => (
-                    <div key={u.filename} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+                    <div key={u.folder} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid var(--border-subtle)' }}>
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {u.filename}
+                        {u.folder} <span style={{ color: 'var(--text-tertiary)' }}>({u.email})</span>
                       </span>
                       <Button variant="ghost" size="sm" onClick={() => handleCocokkan(u)}>Cocokkan</Button>
                     </div>
@@ -191,12 +192,18 @@ export function UploadTab() {
         </div>
 
         <div style={{ ...CARD_STYLE, padding: '20px 22px' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-semibold)', letterSpacing: 'var(--tracking-tight)' }}>
-            Aturan Penamaan Berkas
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-semibold)', letterSpacing: 'var(--tracking-tight)' }}>
+              Struktur ZIP &amp; Manifest
+            </div>
+            <a href="/templates/manifest_template.csv" download style={{ flexShrink: 0 }}>
+              <Button variant="ghost" size="sm">Unduh Template Manifest</Button>
+            </a>
           </div>
           <p style={{ margin: '4px 0 12px', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            Rekomendasi: sertakan <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>manifest.csv</span> di akar ZIP. Bila tidak
-            ada, sistem membaca NIK dari nama berkas.
+            Wajib: <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>manifest.csv</span> di akar ZIP, lalu satu folder per
+            peserta berisi satu berkas PDF. Bila folder berisi lebih dari satu berkas, berkas yang dipakai adalah yang urutan namanya
+            paling awal (alfabetis).
           </p>
           <div
             style={{
@@ -213,12 +220,16 @@ export function UploadTab() {
             <br />
             ├── manifest.csv
             <br />
-            ├── 3204012509870007_SK-1182.pdf
+            ├── sri_wahyuni/
             <br />
-            └── 3174052003910012_SK-1183.pdf
+            │   └── sertifikat.pdf
+            <br />
+            └── budi_santoso/
+            <br />
+            &nbsp;&nbsp;&nbsp;&nbsp;└── sertifikat.pdf
           </div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-tertiary)', marginTop: 10 }}>
-            manifest.csv → nik,nomor,file
+            manifest.csv (pemisah ;) → folder;email
           </div>
         </div>
       </div>

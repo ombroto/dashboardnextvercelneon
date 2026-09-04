@@ -33,13 +33,14 @@ export async function POST(request: Request) {
     if (existing) {
       await db
         .update(sertifikat)
-        .set({ nama: row.nama, nik: row.nik, kegiatanId, updatedAt: new Date() })
+        .set({ nama: row.nama, nik: row.nik, email: row.email, kegiatanId, updatedAt: new Date() })
         .where(eq(sertifikat.id, existing.id));
     } else {
       await db.insert(sertifikat).values({
         kegiatanId,
         nama: row.nama,
         nik: row.nik,
+        email: row.email,
         nomor: row.nomor,
         status: 'belum',
       });

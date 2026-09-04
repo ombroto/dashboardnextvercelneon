@@ -26,11 +26,10 @@ test('admin logs in, imports CSV then ZIP, and sees a siap row', async ({ page }
   // the network; bumped to 30s so the assertion doesn't flake on real I/O latency.
   await expect(page.getByText(/berkas cocok otomatis/)).toBeVisible({ timeout: 30000 });
 
-  // This fixture's nomor ('SK-E2E-UNIQUE-9001/UJI/2026', prefix 'SK-E2E-UNIQUE-9001')
-  // is deliberately unique across the dev database (see docs for the final-review fix
-  // that introduced it), so the automatic nik+nomor-prefix match in
-  // matchFilenameToCandidate (src/lib/zip-match.ts) is unambiguous and this exercises
-  // the spec's actual critical path: ZIP upload -> automatic match -> row becomes siap.
+  // This fixture's email ('e2e.unique@example.com') is deliberately unique across the
+  // dev database, so the automatic email match in matchEmailToCandidate
+  // (src/lib/zip-match.ts) is unambiguous and this exercises the spec's actual
+  // critical path: ZIP upload -> manifest.csv email match -> row becomes siap.
   await expect(page.getByText(/^1 berkas cocok otomatis/)).toBeVisible();
 
   await page.goto('/admin?tab=penerima');

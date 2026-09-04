@@ -4,6 +4,7 @@ import { normalizeNik } from './nik';
 export interface ParticipantRow {
   nik: string;
   nama: string;
+  email: string;
   kegiatan: string;
   tanggalTerbit: string;
   nomor: string;
@@ -20,7 +21,7 @@ export interface ParseParticipantCsvResult {
   errors: CsvRowError[];
 }
 
-const REQUIRED_COLUMNS = ['nik', 'nama', 'kegiatan', 'tanggal_terbit', 'nomor', 'jam'] as const;
+const REQUIRED_COLUMNS = ['nik', 'nama', 'email', 'kegiatan', 'tanggal_terbit', 'nomor', 'jam'] as const;
 
 export function parseParticipantCsv(csvText: string): ParseParticipantCsvResult {
   const records: Record<string, string>[] = parse(csvText, {
@@ -49,6 +50,7 @@ export function parseParticipantCsv(csvText: string): ParseParticipantCsvResult 
     rows.push({
       nik: normalizeNik(record.nik),
       nama: record.nama,
+      email: record.email,
       kegiatan: record.kegiatan,
       tanggalTerbit: record.tanggal_terbit,
       nomor: record.nomor,
