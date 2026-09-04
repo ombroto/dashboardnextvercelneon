@@ -2,13 +2,12 @@ import { parse } from 'csv-parse/sync';
 import { normalizeNik } from './nik';
 
 export interface ParticipantRow {
-  nik: string;
   nama: string;
+  nik: string;
   email: string;
-  kegiatan: string;
-  tanggalTerbit: string;
-  nomor: string;
-  jam: number;
+  provinsi: string;
+  kabupatenKota: string;
+  asalInstansi: string;
 }
 
 export interface CsvRowError {
@@ -21,13 +20,18 @@ export interface ParseParticipantCsvResult {
   errors: CsvRowError[];
 }
 
-const REQUIRED_COLUMNS = ['nik', 'nama', 'email', 'kegiatan', 'tanggal_terbit', 'nomor', 'jam'] as const;
+const REQUIRED_COLUMNS = ['nama_peserta', 'username', 'email'] as const;
+
+function normalizeHeader(header: string): string {
+  return header.trim().toLowerCase().replace(/\s+/g, ' ');
+}
 
 export function parseParticipantCsv(csvText: string): ParseParticipantCsvResult {
   const records: Record<string, string>[] = parse(csvText, {
-    columns: true,
+    columns: (header: string[]) => header.map(normalizeHeader),
     skip_empty_lines: true,
     trim: true,
+    delimiter: ';',
   });
 
   const rows: ParticipantRow[] = [];
@@ -41,20 +45,13 @@ export function parseParticipantCsv(csvText: string): ParseParticipantCsvResult 
       return;
     }
 
-    const jam = Number(record.jam);
-    if (!Number.isFinite(jam) || jam <= 0) {
-      errors.push({ line, message: "Kolom 'jam' harus berupa angka positif" });
-      return;
-    }
-
     rows.push({
-      nik: normalizeNik(record.nik),
-      nama: record.nama,
+      nama: record.nama_peserta,
+      nik: normalizeNik(record.username),
       email: record.email,
-      kegiatan: record.kegiatan,
-      tanggalTerbit: record.tanggal_terbit,
-      nomor: record.nomor,
-      jam,
+      provinsi: record.provinsi ?? '',
+      kabupatenKota: record['kabupaten / kota'] ?? '',
+      asalInstansi: record['asal instansi'] ?? '',
     });
   });
 

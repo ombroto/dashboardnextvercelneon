@@ -1,47 +1,54 @@
 import { describe, it, expect } from 'vitest';
 import { parseParticipantCsv } from '@/lib/csv';
 
-const VALID_CSV = `nik,nama,email,kegiatan,tanggal_terbit,nomor,jam
-3204012509870007,Sri Wahyuni,sri.wahyuni@example.com,Diklat Pembudayaan Nilai Pancasila Angkatan VII,2026-06-18,SK-1182/DIK/2026,32
-3174052003910012,Bayu Anggara Putra,bayu.anggara@example.com,Diklat Pembudayaan Nilai Pancasila Angkatan VII,2026-06-18,SK-1183/DIK/2026,32`;
+const HEADER = 'nama_peserta;Username;Email;Provinsi;Kabupaten / kota;Asal instansi';
 
 describe('parseParticipantCsv', () => {
-  it('parses valid rows', () => {
-    const { rows, errors } = parseParticipantCsv(VALID_CSV);
+  it('parses a valid peserta CSV row', () => {
+    const csv = `${HEADER}\nTriyono, SH., M.Kn;3374082512670005;triyono1225@gmail.com;Jawa Tengah;KABUPATEN WONOGIRI;Universitas Diponegoro`;
+    const { rows, errors } = parseParticipantCsv(csv);
     expect(errors).toHaveLength(0);
-    expect(rows).toHaveLength(2);
+    expect(rows).toEqual([
+      {
+        nama: 'Triyono, SH., M.Kn',
+        nik: '3374082512670005',
+        email: 'triyono1225@gmail.com',
+        provinsi: 'Jawa Tengah',
+        kabupatenKota: 'KABUPATEN WONOGIRI',
+        asalInstansi: 'Universitas Diponegoro',
+      },
+    ]);
+  });
+
+  it('allows blank Provinsi/Kabupaten-kota/Asal instansi', () => {
+    const csv = `${HEADER}\nBudi;1234567890123456;budi@example.com;;;`;
+    const { rows, errors } = parseParticipantCsv(csv);
+    expect(errors).toHaveLength(0);
     expect(rows[0]).toEqual({
-      nik: '3204012509870007',
-      nama: 'Sri Wahyuni',
-      email: 'sri.wahyuni@example.com',
-      kegiatan: 'Diklat Pembudayaan Nilai Pancasila Angkatan VII',
-      tanggalTerbit: '2026-06-18',
-      nomor: 'SK-1182/DIK/2026',
-      jam: 32,
+      nama: 'Budi',
+      nik: '1234567890123456',
+      email: 'budi@example.com',
+      provinsi: '',
+      kabupatenKota: '',
+      asalInstansi: '',
     });
   });
 
-  it('reports a missing required column with its line number', () => {
-    const csv = `nik,nama,email,kegiatan,tanggal_terbit,nomor,jam
-,Sri Wahyuni,sri.wahyuni@example.com,Diklat X,2026-06-18,SK-1182/DIK/2026,32`;
-    const { rows, errors } = parseParticipantCsv(csv);
-    expect(rows).toHaveLength(0);
-    expect(errors).toEqual([{ line: 2, message: "Kolom 'nik' kosong" }]);
+  it('reports a missing nama_peserta column', () => {
+    const csv = `${HEADER}\n;1234567890123456;budi@example.com;Jawa Tengah;KOTA SEMARANG;Undip`;
+    const { errors } = parseParticipantCsv(csv);
+    expect(errors).toEqual([{ line: 2, message: "Kolom 'nama_peserta' kosong" }]);
   });
 
-  it('reports a missing email column', () => {
-    const csv = `nik,nama,email,kegiatan,tanggal_terbit,nomor,jam
-3204012509870007,Sri Wahyuni,,Diklat X,2026-06-18,SK-1182/DIK/2026,32`;
-    const { rows, errors } = parseParticipantCsv(csv);
-    expect(rows).toHaveLength(0);
+  it('reports a missing Email column', () => {
+    const csv = `${HEADER}\nBudi;1234567890123456;;Jawa Tengah;KOTA SEMARANG;Undip`;
+    const { errors } = parseParticipantCsv(csv);
     expect(errors).toEqual([{ line: 2, message: "Kolom 'email' kosong" }]);
   });
 
-  it('reports a non-numeric jam column', () => {
-    const csv = `nik,nama,email,kegiatan,tanggal_terbit,nomor,jam
-3204012509870007,Sri Wahyuni,sri.wahyuni@example.com,Diklat X,2026-06-18,SK-1182/DIK/2026,abc`;
-    const { rows, errors } = parseParticipantCsv(csv);
-    expect(rows).toHaveLength(0);
-    expect(errors).toEqual([{ line: 2, message: "Kolom 'jam' harus berupa angka positif" }]);
+  it('reports a missing Username (NIK) column', () => {
+    const csv = `${HEADER}\nBudi;;budi@example.com;Jawa Tengah;KOTA SEMARANG;Undip`;
+    const { errors } = parseParticipantCsv(csv);
+    expect(errors).toEqual([{ line: 2, message: "Kolom 'username' kosong" }]);
   });
 });
