@@ -4,9 +4,8 @@ import { sertifikat, kegiatan, unduhanLog } from '@/db/schema';
 
 export interface CertificateSummary {
   id: number;
-  nomor: string;
   kegiatanNama: string;
-  tanggalTerbit: string;
+  tanggalSelesai: string | null;
   jumlahJp: number;
   status: 'siap' | 'belum';
 }
@@ -26,9 +25,8 @@ function groupToPerson(nik: string, rows: JoinedRow[]): PersonResult | null {
     nama: rows[0].sertifikat.nama,
     certificates: rows.map((r) => ({
       id: r.sertifikat.id,
-      nomor: r.sertifikat.nomor,
       kegiatanNama: r.kegiatan.nama,
-      tanggalTerbit: r.kegiatan.tanggalTerbit,
+      tanggalSelesai: r.kegiatan.tanggalSelesai,
       jumlahJp: r.kegiatan.jumlahJp,
       status: r.sertifikat.status,
     })),
@@ -114,9 +112,8 @@ export async function getCertificateById(id: number): Promise<CertificateDetail 
   const { sertifikat: s, kegiatan: k } = rows[0];
   return {
     id: s.id,
-    nomor: s.nomor,
     kegiatanNama: k.nama,
-    tanggalTerbit: k.tanggalTerbit,
+    tanggalSelesai: k.tanggalSelesai,
     jumlahJp: k.jumlahJp,
     status: s.status,
     nama: s.nama,
@@ -151,9 +148,8 @@ export interface AdminSertifikatRow {
   id: number;
   nama: string;
   nik: string;
-  nomor: string;
   kegiatanNama: string;
-  tanggalTerbit: string;
+  tanggalSelesai: string | null;
   status: 'siap' | 'belum';
   unduhCount: number;
 }
@@ -168,14 +164,14 @@ export interface GetAllSertifikatFilter {
 const SORT_COLUMNS = {
   nama: sertifikat.nama,
   nik: sertifikat.nik,
-  tanggal: kegiatan.tanggalTerbit,
+  tanggal: kegiatan.tanggalSelesai,
 } as const;
 
 export async function getAllSertifikat(filter: GetAllSertifikatFilter = {}): Promise<AdminSertifikatRow[]> {
   const conditions = [];
   if (filter.q) {
     const pattern = `%${escapeIlikePattern(filter.q)}%`;
-    conditions.push(or(ilike(sertifikat.nama, pattern), ilike(sertifikat.nik, pattern), ilike(sertifikat.nomor, pattern)));
+    conditions.push(or(ilike(sertifikat.nama, pattern), ilike(sertifikat.nik, pattern)));
   }
   if (filter.status) {
     conditions.push(eq(sertifikat.status, filter.status));
@@ -195,9 +191,8 @@ export async function getAllSertifikat(filter: GetAllSertifikatFilter = {}): Pro
     id: r.sertifikat.id,
     nama: r.sertifikat.nama,
     nik: r.sertifikat.nik,
-    nomor: r.sertifikat.nomor,
     kegiatanNama: r.kegiatan.nama,
-    tanggalTerbit: r.kegiatan.tanggalTerbit,
+    tanggalSelesai: r.kegiatan.tanggalSelesai,
     status: r.sertifikat.status,
     unduhCount: r.sertifikat.unduhCount,
   }));

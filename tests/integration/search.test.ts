@@ -11,14 +11,13 @@ describe('search', () => {
   beforeAll(async () => {
     const [k] = await db
       .insert(kegiatan)
-      .values({ nama: 'Uji Coba Diklat', tanggalTerbit: '2026-01-01', jumlahJp: 16 })
+      .values({ nama: 'Uji Coba Diklat', tanggalSelesai: '2026-01-01', jumlahJp: 16 })
       .returning();
     kegiatanId = k.id;
     await db.insert(sertifikat).values({
       kegiatanId,
       nama: 'Nama Uji Coba',
       nik: '1111111111111111',
-      nomor: 'TEST-0001/UJI/2026',
       status: 'belum',
     });
 
@@ -26,14 +25,13 @@ describe('search', () => {
     // kegiatan-scoped search has something real to disambiguate between.
     const [k2] = await db
       .insert(kegiatan)
-      .values({ nama: 'Uji Coba Diklat Lanjutan', tanggalTerbit: '2026-02-01', jumlahJp: 24 })
+      .values({ nama: 'Uji Coba Diklat Lanjutan', tanggalSelesai: '2026-02-01', jumlahJp: 24 })
       .returning();
     secondKegiatanId = k2.id;
     await db.insert(sertifikat).values({
       kegiatanId: secondKegiatanId,
       nama: 'Nama Uji Coba',
       nik: '1111111111111111',
-      nomor: 'TEST-0002/UJI/2026',
       status: 'belum',
     });
   });
@@ -56,7 +54,7 @@ describe('search', () => {
   });
 
   it('returns null when the NIK has no certificate for the given kegiatanId', async () => {
-    const otherKegiatan = await db.insert(kegiatan).values({ nama: 'Uji Tidak Terkait', tanggalTerbit: '2026-01-01', jumlahJp: 8 }).returning();
+    const otherKegiatan = await db.insert(kegiatan).values({ nama: 'Uji Tidak Terkait', tanggalSelesai: '2026-01-01', jumlahJp: 8 }).returning();
     const result = await searchByNik('1111111111111111', otherKegiatan[0].id);
     expect(result).toBeNull();
     await db.delete(kegiatan).where(eq(kegiatan.id, otherKegiatan[0].id));

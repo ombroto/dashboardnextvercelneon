@@ -20,8 +20,7 @@ export function CertificateCard({ certificate }: { certificate: CertificateSumma
       <div style={{ flex: 1 }}>
         <div style={{ fontWeight: 'var(--weight-semibold)' }}>{certificate.kegiatanNama}</div>
         <div style={{ display: 'flex', gap: 14, marginTop: 5, fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>
-          <span style={{ fontFamily: 'var(--font-mono)' }}>{certificate.nomor}</span>
-          <span>Terbit {certificate.tanggalTerbit}</span>
+          <span>Terbit {certificate.tanggalSelesai}</span>
           <span>{certificate.jumlahJp} JP</span>
         </div>
       </div>

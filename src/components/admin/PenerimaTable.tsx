@@ -56,7 +56,7 @@ export async function PenerimaTable(props: PenerimaTableProps) {
             type="text"
             name="q"
             defaultValue={q}
-            placeholder="Cari nama, NIK, atau nomor"
+            placeholder="Cari nama atau NIK"
             style={{ width: '100%', height: 40, padding: '0 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', background: 'rgba(255,255,255,0.7)', fontSize: 'var(--text-sm)' }}
           />
         </form>
@@ -115,7 +115,7 @@ export async function PenerimaTable(props: PenerimaTableProps) {
               <td style={{ padding: 11 }}>{r.nama}</td>
               <td style={{ padding: 11, fontFamily: 'var(--font-mono)' }}>{maskNik(r.nik)}</td>
               <td style={{ padding: 11 }}>{r.kegiatanNama}</td>
-              <td style={{ padding: 11, fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>{r.tanggalTerbit}</td>
+              <td style={{ padding: 11, fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>{r.tanggalSelesai}</td>
               <td style={{ padding: 11 }}>
                 <Badge variant={r.status === 'siap' ? 'success' : 'warning'}>{r.status === 'siap' ? 'Siap' : 'Belum'}</Badge>
               </td>

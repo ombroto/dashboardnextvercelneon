@@ -10,12 +10,12 @@ describe('getAllSertifikat filter/sort', () => {
   beforeAll(async () => {
     const [k] = await db
       .insert(kegiatan)
-      .values({ nama: 'Uji GetAll', tanggalTerbit: '2026-03-01', jumlahJp: 8 })
+      .values({ nama: 'Uji GetAll', tanggalSelesai: '2026-03-01', jumlahJp: 8 })
       .returning();
     kegiatanId = k.id;
     await db.insert(sertifikat).values([
-      { kegiatanId, nama: 'Zeta Uji', nik: '4444444444444401', nomor: 'GETALL-0001/UJI/2026', status: 'siap' },
-      { kegiatanId, nama: 'Alpha Uji', nik: '4444444444444402', nomor: 'GETALL-0002/UJI/2026', status: 'belum' },
+      { kegiatanId, nama: 'Zeta Uji', nik: '4444444444444401', status: 'siap' },
+      { kegiatanId, nama: 'Alpha Uji', nik: '4444444444444402', status: 'belum' },
     ]);
   });
 

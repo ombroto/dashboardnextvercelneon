@@ -9,11 +9,11 @@ describe('DELETE /api/admin/sertifikat/[id]', () => {
   let certId: number;
 
   beforeAll(async () => {
-    const [k] = await db.insert(kegiatan).values({ nama: 'Uji Hapus', tanggalTerbit: '2026-02-01', jumlahJp: 8 }).returning();
+    const [k] = await db.insert(kegiatan).values({ nama: 'Uji Hapus', tanggalSelesai: '2026-02-01', jumlahJp: 8 }).returning();
     kegiatanId = k.id;
     const [s] = await db
       .insert(sertifikat)
-      .values({ kegiatanId, nama: 'Peserta Hapus', nik: '7777777777777777', nomor: 'SK-TEST-3/UJI/2026', status: 'belum' })
+      .values({ kegiatanId, nama: 'Peserta Hapus', nik: '7777777777777777', status: 'belum' })
       .returning();
     certId = s.id;
   });

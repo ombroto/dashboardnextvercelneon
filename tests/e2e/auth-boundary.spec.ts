@@ -4,6 +4,6 @@ test('unauthenticated requests are rejected at the admin boundary', async ({ pag
   const pageResponse = await page.goto('/admin');
   expect(pageResponse?.url()).toContain('/admin/login');
 
-  const apiResponse = await request.post('/api/admin/import/csv', { data: {} });
+  const apiResponse = await request.post('/api/admin/kegiatan', { data: {} });
   expect(apiResponse.status()).toBe(401);
 });

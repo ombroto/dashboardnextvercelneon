@@ -11,7 +11,7 @@ describe('PUT /api/admin/sertifikat/[id]/replace', () => {
   beforeAll(async () => {
     const [k] = await db
       .insert(kegiatan)
-      .values({ nama: 'Uji Ganti Berkas', tanggalTerbit: '2026-02-01', jumlahJp: 8 })
+      .values({ nama: 'Uji Ganti Berkas', tanggalSelesai: '2026-02-01', jumlahJp: 8 })
       .returning();
     kegiatanId = k.id;
     const [s] = await db
@@ -20,7 +20,6 @@ describe('PUT /api/admin/sertifikat/[id]/replace', () => {
         kegiatanId,
         nama: 'Peserta Ganti',
         nik: '6666666666660001',
-        nomor: 'SK-REPLACE-1/UJI/2026',
         status: 'belum',
       })
       .returning();

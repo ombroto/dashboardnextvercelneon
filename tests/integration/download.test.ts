@@ -11,7 +11,7 @@ describe('download route', () => {
   beforeAll(async () => {
     const [k] = await db
       .insert(kegiatan)
-      .values({ nama: 'Uji Unduh', tanggalTerbit: '2026-01-01', jumlahJp: 8 })
+      .values({ nama: 'Uji Unduh', tanggalSelesai: '2026-01-01', jumlahJp: 8 })
       .returning();
     kegiatanId = k.id;
     const [s] = await db
@@ -20,7 +20,6 @@ describe('download route', () => {
         kegiatanId,
         nama: 'Penerima Uji',
         nik: '2222222222222222',
-        nomor: 'TEST-DL-0002/UJI/2026',
         status: 'siap',
         fileUrl: 'https://example.com/fake.pdf',
       })
@@ -49,11 +48,11 @@ describe('download route', () => {
   it('returns 404 for a certificate that is not siap', async () => {
     const [k2] = await db
       .insert(kegiatan)
-      .values({ nama: 'Uji Belum', tanggalTerbit: '2026-01-01', jumlahJp: 8 })
+      .values({ nama: 'Uji Belum', tanggalSelesai: '2026-01-01', jumlahJp: 8 })
       .returning();
     const [notReady] = await db
       .insert(sertifikat)
-      .values({ kegiatanId: k2.id, nama: 'X', nik: '3333333333333333', nomor: 'TEST-0003/UJI/2026', status: 'belum' })
+      .values({ kegiatanId: k2.id, nama: 'X', nik: '3333333333333333', status: 'belum' })
       .returning();
 
     const request = new Request(`http://localhost/sertifikat/${notReady.id}/download`);
