@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { listKegiatan } from '@/lib/kegiatan';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/IconButton';
+import { KegiatanDeleteButton } from '@/components/admin/KegiatanDeleteButton';
 
 export async function KegiatanList() {
   const items = await listKegiatan();
@@ -24,6 +26,7 @@ export async function KegiatanList() {
               <th style={{ textAlign: 'right', padding: 11 }}>Peserta</th>
               <th style={{ textAlign: 'right', padding: 11 }}>Lulus</th>
               <th style={{ textAlign: 'right', padding: 11 }}>Tidak Lulus</th>
+              <th style={{ padding: 11 }}></th>
             </tr>
           </thead>
           <tbody>
@@ -45,6 +48,12 @@ export async function KegiatanList() {
                 </td>
                 <td style={{ padding: 11, textAlign: 'right' }}>
                   <Badge variant="warning">{k.totalPeserta - k.jumlahLulus}</Badge>
+                </td>
+                <td style={{ padding: 11 }}>
+                  <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                    <IconButton icon="pencil" label="Edit kegiatan" href={`/admin/kegiatan/${k.id}/edit`} />
+                    <KegiatanDeleteButton id={k.id} nama={k.nama} />
+                  </div>
                 </td>
               </tr>
             ))}

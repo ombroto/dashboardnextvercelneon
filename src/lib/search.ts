@@ -1,4 +1,4 @@
-import { eq, ilike, or, and, asc, desc, count } from 'drizzle-orm';
+import { eq, ilike, or, and, asc, desc } from 'drizzle-orm';
 import { db } from '@/db';
 import { sertifikat, kegiatan, unduhanLog } from '@/db/schema';
 
@@ -212,9 +212,4 @@ export async function getUnduhanLog(options: { limit?: number } = {}): Promise<U
     .orderBy(desc(unduhanLog.waktu));
 
   return options.limit ? query.limit(options.limit) : query;
-}
-
-export async function countAllSertifikat(): Promise<number> {
-  const [row] = await db.select({ value: count() }).from(sertifikat);
-  return row.value;
 }

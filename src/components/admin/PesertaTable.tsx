@@ -41,7 +41,7 @@ export async function PesertaTable(props: PesertaTableProps) {
   const statusFilters: { label: string; value: 'siap' | 'belum' | undefined }[] = [
     { label: 'Semua', value: undefined },
     { label: 'Siap', value: 'siap' },
-    { label: 'Belum', value: 'belum' },
+    { label: 'Tidak Lulus', value: 'belum' },
   ];
 
   return (
@@ -117,7 +117,7 @@ export async function PesertaTable(props: PesertaTableProps) {
               <td style={{ padding: 11 }}>{r.kegiatanNama}</td>
               <td style={{ padding: 11, fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>{r.tanggalSelesai}</td>
               <td style={{ padding: 11 }}>
-                <Badge variant={r.status === 'siap' ? 'success' : 'warning'}>{r.status === 'siap' ? 'Siap' : 'Belum'}</Badge>
+                <Badge variant={r.status === 'siap' ? 'success' : 'warning'}>{r.status === 'siap' ? 'Siap' : 'Tidak Lulus'}</Badge>
               </td>
               <td style={{ padding: 11, textAlign: 'right', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>{r.unduhCount}</td>
               <td style={{ padding: 11 }}>

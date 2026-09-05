@@ -16,6 +16,7 @@ import {
   Upload,
   UploadCloud,
   CircleAlert,
+  Pencil,
 } from 'lucide-react';
 
 // Explicit map of only the icons actually used across the codebase (checked via
@@ -42,6 +43,7 @@ const iconMap = {
   upload: Upload,
   'upload-cloud': UploadCloud,
   'circle-alert': CircleAlert,
+  pencil: Pencil,
 } as const;
 
 type IconName = keyof typeof iconMap;

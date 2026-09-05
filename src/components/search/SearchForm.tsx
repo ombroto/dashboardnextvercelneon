@@ -51,6 +51,8 @@ export function SearchForm({ error }: { error?: string }) {
   return (
     <div
       style={{
+        position: 'relative',
+        zIndex: 20,
         maxWidth: 660,
         margin: '26px auto 0',
         padding: 22,

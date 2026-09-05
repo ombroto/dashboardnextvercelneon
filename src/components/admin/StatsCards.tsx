@@ -1,20 +1,19 @@
-import { count, eq } from 'drizzle-orm';
-import { db } from '@/db';
-import { sertifikat, unduhanLog } from '@/db/schema';
 import { Icon } from '@/components/ui/Icon';
 
-export async function StatsCards() {
-  const [[siapCount], [belumCount], [unduhanCount]] = await Promise.all([
-    db.select({ value: count() }).from(sertifikat).where(eq(sertifikat.status, 'siap')),
-    db.select({ value: count() }).from(sertifikat).where(eq(sertifikat.status, 'belum')),
-    db.select({ value: count() }).from(unduhanLog),
-  ]);
-
+export function StatsCards({
+  siapCount,
+  belumCount,
+  unduhanCount,
+}: {
+  siapCount: number;
+  belumCount: number;
+  unduhanCount: number;
+}) {
   const stats = [
-    { label: 'Total Peserta', value: siapCount.value + belumCount.value, icon: 'users', color: 'var(--ut-blue-600)' },
-    { label: 'Sertifikat Siap', value: siapCount.value, icon: 'file-check-2', color: 'var(--ut-green)' },
-    { label: 'Belum Cocok', value: belumCount.value, icon: 'triangle-alert', color: 'var(--ut-orange)' },
-    { label: 'Total Unduhan', value: unduhanCount.value, icon: 'download', color: 'var(--ut-cyan)' },
+    { label: 'Total Peserta', value: siapCount + belumCount, icon: 'users', color: 'var(--ut-blue-600)' },
+    { label: 'Sertifikat Siap', value: siapCount, icon: 'file-check-2', color: 'var(--ut-green)' },
+    { label: 'Tidak Lulus', value: belumCount, icon: 'triangle-alert', color: 'var(--ut-orange)' },
+    { label: 'Total Unduhan', value: unduhanCount, icon: 'download', color: 'var(--ut-cyan)' },
   ];
 
   return (

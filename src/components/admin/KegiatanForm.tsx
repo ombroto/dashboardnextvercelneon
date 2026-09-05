@@ -35,21 +35,43 @@ function yearOptions(): number[] {
   return years;
 }
 
-export function KegiatanForm({ wilayah }: { wilayah: Record<string, string[]> }) {
+export interface KegiatanFormInitial {
+  nama: string;
+  tahun: number;
+  segmen: (typeof SEGMEN_OPTIONS)[number] | '';
+  tanggalMulai: string;
+  tanggalSelesai: string;
+  jumlahJp: number;
+  provinsi: string;
+  kabupatenKota: string;
+  modePenyelenggaraan: (typeof MODE_OPTIONS)[number] | '';
+  logoUrl: string | null;
+}
+
+export function KegiatanForm({
+  wilayah,
+  kegiatanId,
+  initial,
+}: {
+  wilayah: Record<string, string[]>;
+  kegiatanId?: number;
+  initial?: KegiatanFormInitial;
+}) {
   const router = useRouter();
   const provinsiList = useMemo(() => Object.keys(wilayah), [wilayah]);
+  const isEdit = kegiatanId !== undefined;
 
-  const [nama, setNama] = useState('');
-  const [tahun, setTahun] = useState(new Date().getFullYear());
-  const [segmen, setSegmen] = useState<(typeof SEGMEN_OPTIONS)[number] | ''>('');
-  const [tanggalMulai, setTanggalMulai] = useState('');
-  const [tanggalSelesai, setTanggalSelesai] = useState('');
-  const [jumlahJp, setJumlahJp] = useState('');
-  const [provinsi, setProvinsi] = useState('');
-  const [kabupatenKota, setKabupatenKota] = useState('');
-  const [modePenyelenggaraan, setModePenyelenggaraan] = useState<(typeof MODE_OPTIONS)[number] | ''>('');
+  const [nama, setNama] = useState(initial?.nama ?? '');
+  const [tahun, setTahun] = useState(initial?.tahun ?? new Date().getFullYear());
+  const [segmen, setSegmen] = useState<(typeof SEGMEN_OPTIONS)[number] | ''>(initial?.segmen ?? '');
+  const [tanggalMulai, setTanggalMulai] = useState(initial?.tanggalMulai ?? '');
+  const [tanggalSelesai, setTanggalSelesai] = useState(initial?.tanggalSelesai ?? '');
+  const [jumlahJp, setJumlahJp] = useState(initial?.jumlahJp ? String(initial.jumlahJp) : '');
+  const [provinsi, setProvinsi] = useState(initial?.provinsi ?? '');
+  const [kabupatenKota, setKabupatenKota] = useState(initial?.kabupatenKota ?? '');
+  const [modePenyelenggaraan, setModePenyelenggaraan] = useState<(typeof MODE_OPTIONS)[number] | ''>(initial?.modePenyelenggaraan ?? '');
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(initial?.logoUrl ?? null);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -95,17 +117,19 @@ export function KegiatanForm({ wilayah }: { wilayah: Record<string, string[]> })
 
     setSubmitting(true);
     try {
-      let logoUrl: string | undefined;
+      let logoUrl: string | null | undefined;
       if (logoFile) {
         const blob = await upload(logoFile.name, logoFile, {
           access: 'public',
           handleUploadUrl: '/api/admin/blob/upload',
         });
         logoUrl = blob.url;
+      } else if (isEdit) {
+        logoUrl = logoPreview;
       }
 
-      const response = await fetch('/api/admin/kegiatan', {
-        method: 'POST',
+      const response = await fetch(isEdit ? `/api/admin/kegiatan/${kegiatanId}` : '/api/admin/kegiatan', {
+        method: isEdit ? 'PATCH' : 'POST',
         body: JSON.stringify({
           nama,
           tahun,
@@ -121,12 +145,12 @@ export function KegiatanForm({ wilayah }: { wilayah: Record<string, string[]> })
       });
       const body = await response.json();
       if (!response.ok) {
-        setErrors(body.errors ?? ['Gagal membuat kegiatan']);
+        setErrors(body.errors ?? [isEdit ? 'Gagal menyimpan perubahan kegiatan' : 'Gagal membuat kegiatan']);
         return;
       }
-      router.push(`/admin/kegiatan/${body.id}`);
+      router.push(`/admin/kegiatan/${isEdit ? kegiatanId : body.id}`);
     } catch {
-      setErrors(['Gagal mengunggah logo atau membuat kegiatan. Coba lagi.']);
+      setErrors([isEdit ? 'Gagal mengunggah logo atau menyimpan perubahan kegiatan. Coba lagi.' : 'Gagal mengunggah logo atau membuat kegiatan. Coba lagi.']);
     } finally {
       setSubmitting(false);
     }
@@ -255,8 +279,12 @@ export function KegiatanForm({ wilayah }: { wilayah: Record<string, string[]> })
       </div>
 
       <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
-        <Button type="submit" variant="primary" disabled={submitting}>{submitting ? 'Menyimpan...' : 'Buat Kegiatan'}</Button>
-        <Button type="button" variant="ghost" onClick={() => router.push('/admin')}>Batal</Button>
+        <Button type="submit" variant="primary" disabled={submitting}>
+          {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Buat Kegiatan'}
+        </Button>
+        <Button type="button" variant="ghost" onClick={() => router.push(isEdit ? `/admin/kegiatan/${kegiatanId}` : '/admin')}>
+          Batal
+        </Button>
       </div>
     </form>
   );

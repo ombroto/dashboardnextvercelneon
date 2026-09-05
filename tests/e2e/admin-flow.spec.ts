@@ -8,6 +8,10 @@ test('admin logs in, creates a kegiatan, imports CSV then ZIP, and sees a siap r
   await page.getByRole('button', { name: 'Masuk' }).click();
   await expect(page).toHaveURL('/admin', { timeout: 15000 });
 
+  await expect(page.locator('header').getByText('Masuk')).toHaveCount(0);
+  const userMenuButton = page.locator('header button[aria-haspopup="menu"]');
+  await expect(userMenuButton).toBeVisible();
+
   await page.getByText('Kegiatan Baru').click();
   await expect(page).toHaveURL('/admin/kegiatan/baru');
 
@@ -35,4 +39,8 @@ test('admin logs in, creates a kegiatan, imports CSV then ZIP, and sees a siap r
   const row = page.locator('tr', { hasText: 'Peserta ZIP E2E' });
   await expect(row).toBeVisible();
   await expect(row.getByText('Siap')).toBeVisible();
+
+  await userMenuButton.click();
+  await page.locator('[role="menu"]').getByText('Keluar').click();
+  await expect(page).toHaveURL('/admin/login', { timeout: 15000 });
 });

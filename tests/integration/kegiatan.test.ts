@@ -1,8 +1,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { eq } from 'drizzle-orm';
+import { put, head } from '@vercel/blob';
 import { db } from '@/db';
 import { kegiatan, sertifikat } from '@/db/schema';
-import { createKegiatan, listKegiatan, getKegiatanById } from '@/lib/kegiatan';
+import { createKegiatan, listKegiatan, getKegiatanById, updateKegiatan, deleteKegiatan } from '@/lib/kegiatan';
 
 describe('kegiatan lib', () => {
   let createdId: number | undefined;
@@ -78,4 +79,123 @@ describe('kegiatan lib', () => {
 
     expect(await getKegiatanById(-1)).toBeNull();
   });
+
+  it('updates an existing kegiatan', async () => {
+    const { id } = await createKegiatan({
+      nama: 'Uji Lib Kegiatan Update',
+      jumlahJp: 8,
+      tahun: 2026,
+      segmen: 'KML',
+      tanggalMulai: '2026-06-01',
+      tanggalSelesai: '2026-06-02',
+      provinsi: 'Jawa Tengah',
+      kabupatenKota: 'KOTA SEMARANG',
+    });
+    createdId = id;
+
+    await updateKegiatan(id, {
+      nama: 'Uji Lib Kegiatan Update (diubah)',
+      jumlahJp: 16,
+      tahun: 2027,
+      segmen: 'Orsospol',
+      tanggalMulai: '2027-01-01',
+      tanggalSelesai: '2027-01-05',
+      provinsi: 'DKI Jakarta',
+      kabupatenKota: 'JAKARTA PUSAT',
+      modePenyelenggaraan: 'Daring',
+    });
+
+    const [row] = await db.select().from(kegiatan).where(eq(kegiatan.id, id));
+    expect(row.nama).toBe('Uji Lib Kegiatan Update (diubah)');
+    expect(row.tahun).toBe(2027);
+    expect(row.segmen).toBe('Orsospol');
+    expect(row.modePenyelenggaraan).toBe('Daring');
+  });
+
+  it('keeps the existing logo when logoUrl is omitted from the update', async () => {
+    const { id } = await createKegiatan({
+      nama: 'Uji Lib Kegiatan Logo Tetap',
+      jumlahJp: 8,
+      tahun: 2026,
+      segmen: 'KML',
+      tanggalMulai: '2026-06-01',
+      tanggalSelesai: '2026-06-02',
+      provinsi: 'Jawa Tengah',
+      kabupatenKota: 'KOTA SEMARANG',
+      logoUrl: 'https://example.com/logo.png',
+    });
+    createdId = id;
+
+    await updateKegiatan(id, {
+      nama: 'Uji Lib Kegiatan Logo Tetap',
+      jumlahJp: 8,
+      tahun: 2026,
+      segmen: 'KML',
+      tanggalMulai: '2026-06-01',
+      tanggalSelesai: '2026-06-02',
+      provinsi: 'Jawa Tengah',
+      kabupatenKota: 'KOTA SEMARANG',
+    });
+
+    const [row] = await db.select().from(kegiatan).where(eq(kegiatan.id, id));
+    expect(row.logoUrl).toBe('https://example.com/logo.png');
+  });
+
+  it('clears the logo when logoUrl is explicitly null', async () => {
+    const { id } = await createKegiatan({
+      nama: 'Uji Lib Kegiatan Logo Hapus',
+      jumlahJp: 8,
+      tahun: 2026,
+      segmen: 'KML',
+      tanggalMulai: '2026-06-01',
+      tanggalSelesai: '2026-06-02',
+      provinsi: 'Jawa Tengah',
+      kabupatenKota: 'KOTA SEMARANG',
+      logoUrl: 'https://example.com/logo2.png',
+    });
+    createdId = id;
+
+    await updateKegiatan(id, {
+      nama: 'Uji Lib Kegiatan Logo Hapus',
+      jumlahJp: 8,
+      tahun: 2026,
+      segmen: 'KML',
+      tanggalMulai: '2026-06-01',
+      tanggalSelesai: '2026-06-02',
+      provinsi: 'Jawa Tengah',
+      kabupatenKota: 'KOTA SEMARANG',
+      logoUrl: null,
+    });
+
+    const [row] = await db.select().from(kegiatan).where(eq(kegiatan.id, id));
+    expect(row.logoUrl).toBeNull();
+  });
+
+  it('deletes the kegiatan row, cascades to its sertifikat, and cleans up blobs', async () => {
+    const logoBlob = await put('test-uploads/kegiatan-logo-test.png', Buffer.from('logo'), { access: 'public', addRandomSuffix: true });
+    const { id } = await createKegiatan({
+      nama: 'Uji Lib Kegiatan Hapus',
+      jumlahJp: 8,
+      tahun: 2026,
+      segmen: 'KML',
+      tanggalMulai: '2026-07-01',
+      tanggalSelesai: '2026-07-02',
+      provinsi: 'Jawa Tengah',
+      kabupatenKota: 'KOTA SEMARANG',
+      logoUrl: logoBlob.url,
+    });
+
+    const fileBlob = await put('test-uploads/kegiatan-sertifikat-test.pdf', Buffer.from('sertifikat'), { access: 'public', addRandomSuffix: true });
+    const [s] = await db
+      .insert(sertifikat)
+      .values({ kegiatanId: id, nama: 'Peserta Hapus Kegiatan', nik: '8888888888888888', status: 'siap', fileUrl: fileBlob.url })
+      .returning();
+
+    await deleteKegiatan(id);
+
+    expect(await db.select().from(kegiatan).where(eq(kegiatan.id, id))).toHaveLength(0);
+    expect(await db.select().from(sertifikat).where(eq(sertifikat.id, s.id))).toHaveLength(0);
+    await expect(head(logoBlob.url)).rejects.toThrow();
+    await expect(head(fileBlob.url)).rejects.toThrow();
+  }, 30000);
 });
