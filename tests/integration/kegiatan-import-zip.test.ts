@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { kegiatan, sertifikat } from '@/db/schema';
-import { put } from '@vercel/blob';
+import { put, del } from '@vercel/blob';
 import { POST } from '@/app/api/admin/kegiatan/[id]/import/zip/route';
 
 describe('POST /api/admin/kegiatan/[id]/import/zip', () => {
@@ -11,6 +11,7 @@ describe('POST /api/admin/kegiatan/[id]/import/zip', () => {
   let otherKegiatanId: number;
   let certId: number;
   let archiveBlobUrl: string;
+  const createdBlobUrls: string[] = [];
 
   beforeAll(async () => {
     const [k] = await db.insert(kegiatan).values({ nama: 'Uji ZIP Scoped', jumlahJp: 8 }).returning();
@@ -32,11 +33,15 @@ describe('POST /api/admin/kegiatan/[id]/import/zip', () => {
     const zipBuffer = readFileSync('tests/fixtures/sertifikat-test.zip');
     const blob = await put('test-uploads/sertifikat-test-scoped.zip', zipBuffer, { access: 'public', addRandomSuffix: true });
     archiveBlobUrl = blob.url;
+    createdBlobUrls.push(archiveBlobUrl);
   });
 
   afterAll(async () => {
     await db.delete(kegiatan).where(eq(kegiatan.id, kegiatanId));
     await db.delete(kegiatan).where(eq(kegiatan.id, otherKegiatanId));
+    if (createdBlobUrls.length > 0) {
+      await del(createdBlobUrls);
+    }
   });
 
   it('matches by email only within this kegiatan and marks it siap', async () => {
@@ -50,9 +55,11 @@ describe('POST /api/admin/kegiatan/[id]/import/zip', () => {
     expect(body.matched).toBe(1);
     expect(body.unmatched).toHaveLength(1);
     expect(body.unmatched[0].folder).toBe('peserta-tidak-cocok');
+    createdBlobUrls.push(...body.unmatched.map((u: { blobUrl: string }) => u.blobUrl));
 
     const [row] = await db.select().from(sertifikat).where(eq(sertifikat.id, certId));
     expect(row.status).toBe('siap');
+    if (row.fileUrl) createdBlobUrls.push(row.fileUrl);
 
     const [otherRow] = await db.select().from(sertifikat).where(eq(sertifikat.kegiatanId, otherKegiatanId));
     expect(otherRow.status).toBe('belum');
