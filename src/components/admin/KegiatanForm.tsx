@@ -125,6 +125,8 @@ export function KegiatanForm({ wilayah }: { wilayah: Record<string, string[]> })
         return;
       }
       router.push(`/admin/kegiatan/${body.id}`);
+    } catch {
+      setErrors(['Gagal mengunggah logo atau membuat kegiatan. Coba lagi.']);
     } finally {
       setSubmitting(false);
     }

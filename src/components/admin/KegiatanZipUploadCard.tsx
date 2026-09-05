@@ -27,11 +27,14 @@ export function KegiatanZipUploadCard({ kegiatanId, pesertaOptions }: { kegiatan
   const [matched, setMatched] = useState<number | null>(null);
   const [unmatched, setUnmatched] = useState<UnmatchedFile[]>([]);
   const [pickerFor, setPickerFor] = useState<UnmatchedFile | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
 
   function stageFile(file: File) {
     setStagedFile(file);
     setMatched(null);
     setUnmatched([]);
+    setErrorMessage(null);
   }
 
   function cancelStaged() {
@@ -39,9 +42,17 @@ export function KegiatanZipUploadCard({ kegiatanId, pesertaOptions }: { kegiatan
     if (inputRef.current) inputRef.current.value = '';
   }
 
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) stageFile(file);
+  }
+
   async function kirim() {
     if (!stagedFile) return;
     setSending(true);
+    setErrorMessage(null);
     try {
       const blob = await upload(stagedFile.name, stagedFile, {
         access: 'public',
@@ -52,11 +63,17 @@ export function KegiatanZipUploadCard({ kegiatanId, pesertaOptions }: { kegiatan
         body: JSON.stringify({ blobUrl: blob.url }),
       });
       const body = await response.json();
+      if (!response.ok) {
+        setErrorMessage(body.error ?? 'Gagal memproses arsip ZIP');
+        return;
+      }
       setMatched(body.matched);
       setUnmatched(body.unmatched);
       setStagedFile(null);
       if (inputRef.current) inputRef.current.value = '';
       router.refresh();
+    } catch {
+      setErrorMessage('Gagal mengunggah arsip ZIP. Periksa koneksi Anda dan coba lagi.');
     } finally {
       setSending(false);
     }
@@ -67,7 +84,10 @@ export function KegiatanZipUploadCard({ kegiatanId, pesertaOptions }: { kegiatan
       method: 'POST',
       body: JSON.stringify({ pesertaId, blobUrl: file.blobUrl, fileSize: file.fileSize }),
     });
-    if (!response.ok) return;
+    if (!response.ok) {
+      window.alert('Gagal mencocokkan: peserta tidak ditemukan pada kegiatan ini.');
+      return;
+    }
     setUnmatched((prev) => prev.filter((u) => u.folder !== file.folder));
     setMatched((prev) => (prev ?? 0) + 1);
     setPickerFor(null);
@@ -76,7 +96,12 @@ export function KegiatanZipUploadCard({ kegiatanId, pesertaOptions }: { kegiatan
 
   return (
     <div style={{ borderRadius: 'var(--radius-xl)', background: 'var(--glass-regular)', border: '1px solid var(--glass-border)', padding: 22 }}>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)', fontWeight: 600 }}>Langkah 3 · Unggah ZIP Sertifikat</div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)', fontWeight: 600 }}>Langkah 3 · Unggah ZIP Sertifikat</div>
+        <a href="/templates/manifest_template.csv" download style={{ flexShrink: 0 }}>
+          <Button variant="ghost" size="sm">Unduh Template Manifest</Button>
+        </a>
+      </div>
       <p style={{ margin: '4px 0 16px', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
         Wajib <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>manifest.csv</span> (folder;email) di akar arsip.
       </p>
@@ -86,7 +111,18 @@ export function KegiatanZipUploadCard({ kegiatanId, pesertaOptions }: { kegiatan
       {!stagedFile ? (
         <div
           onClick={() => inputRef.current?.click()}
-          style={{ border: '2px dashed rgba(0,74,147,0.3)', borderRadius: 'var(--radius-lg)', padding: '26px 20px', textAlign: 'center', cursor: 'pointer' }}
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          style={{
+            border: `2px dashed ${dragOver ? 'var(--ut-blue-500)' : 'rgba(0,74,147,0.3)'}`,
+            borderRadius: 'var(--radius-lg)',
+            background: dragOver ? '#fff' : 'rgba(255,255,255,0.45)',
+            padding: '26px 20px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            transition: 'background 160ms var(--ease-out), border-color 160ms var(--ease-out)',
+          }}
         >
           <Icon name="upload-cloud" size={26} />
           <div style={{ marginTop: 8, fontWeight: 600 }}>Tarik berkas ZIP ke sini</div>
@@ -101,6 +137,12 @@ export function KegiatanZipUploadCard({ kegiatanId, pesertaOptions }: { kegiatan
             <Button variant="primary" onClick={kirim} disabled={sending}>{sending ? 'Mengirim...' : 'Kirim'}</Button>
             <Button variant="ghost" onClick={cancelStaged} disabled={sending}>Batal</Button>
           </div>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div style={{ marginTop: 16, fontSize: 'var(--text-sm)', color: '#b91c1c', fontWeight: 600 }}>
+          {errorMessage}
         </div>
       )}
 

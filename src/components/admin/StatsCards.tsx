@@ -11,7 +11,7 @@ export async function StatsCards() {
   ]);
 
   const stats = [
-    { label: 'Total Penerima', value: siapCount.value + belumCount.value, icon: 'users', color: 'var(--ut-blue-600)' },
+    { label: 'Total Peserta', value: siapCount.value + belumCount.value, icon: 'users', color: 'var(--ut-blue-600)' },
     { label: 'Sertifikat Siap', value: siapCount.value, icon: 'file-check-2', color: 'var(--ut-green)' },
     { label: 'Belum Cocok', value: belumCount.value, icon: 'triangle-alert', color: 'var(--ut-orange)' },
     { label: 'Total Unduhan', value: unduhanCount.value, icon: 'download', color: 'var(--ut-cyan)' },
