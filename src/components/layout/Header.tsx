@@ -78,7 +78,7 @@ export function Header({ user = null }: { user?: HeaderUser | null }) {
       />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-base)', fontWeight: 'var(--weight-semibold)', letterSpacing: 'var(--tracking-tight)', lineHeight: 1.2 }}>
-          Portal Sertifikat Diklat
+          KEDEPUTIAN BIDANG PENDIDIKAN DAN PELATIHAN
         </div>
         <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', fontWeight: 500 }}>Diklat BPIP RI</div>
       </div>

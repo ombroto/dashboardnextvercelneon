@@ -158,7 +158,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Portal Sertifikat Diklat',
+  title: 'Portal Diklat BPIP RI',
   description: 'Cari dan unduh sertifikat diklat BPIP',
 };
 

@@ -12,7 +12,7 @@ const FEATURES = [
     icon: 'file-check-2',
     color: 'var(--ut-green)',
     title: 'Berkas Resmi',
-    body: 'PDF bertanda tangan elektronik, siap dicetak A4 lanskap.',
+    body: 'PDF bertanda tangan elektronik, siap cetak.',
   },
   {
     icon: 'life-buoy',
@@ -20,7 +20,7 @@ const FEATURES = [
     title: 'Data Tidak Ditemukan?',
     body: (
       <>
-        Hubungi sekretariat diklat di <a href="mailto:diklat@bpip.go.id">diklat@bpip.go.id</a>.
+        Hubungi sekretariat diklat di <a href="mailto:direktoratdiklat@bpip.go.id">direktoratdiklat@bpip.go.id</a>.
       </>
     ),
   },
