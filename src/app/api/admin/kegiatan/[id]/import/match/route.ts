@@ -12,6 +12,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     fileSize: number;
   };
 
+  if (typeof blobUrl !== 'string' || !blobUrl.startsWith('https://') || !blobUrl.includes('.blob.vercel-storage.com')) {
+    return NextResponse.json({ error: 'blobUrl tidak valid' }, { status: 400 });
+  }
+
   const [existing] = await db
     .select()
     .from(sertifikat)

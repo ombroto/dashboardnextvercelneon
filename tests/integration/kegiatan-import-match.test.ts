@@ -30,22 +30,31 @@ describe('POST /api/admin/kegiatan/[id]/import/match', () => {
   it('assigns a blob URL to the given peserta and marks it siap', async () => {
     const request = new Request(`http://localhost/api/admin/kegiatan/${kegiatanId}/import/match`, {
       method: 'POST',
-      body: JSON.stringify({ pesertaId: certId, blobUrl: 'https://example.com/manual.pdf', fileSize: 1024 }),
+      body: JSON.stringify({ pesertaId: certId, blobUrl: 'https://abc123.public.blob.vercel-storage.com/manual.pdf', fileSize: 1024 }),
     });
     const response = await POST(request, { params: Promise.resolve({ id: String(kegiatanId) }) });
     expect(response.status).toBe(200);
 
     const [row] = await db.select().from(sertifikat).where(eq(sertifikat.id, certId));
     expect(row.status).toBe('siap');
-    expect(row.fileUrl).toBe('https://example.com/manual.pdf');
+    expect(row.fileUrl).toBe('https://abc123.public.blob.vercel-storage.com/manual.pdf');
   });
 
   it('returns 404 when the peserta belongs to a different kegiatan', async () => {
     const request = new Request(`http://localhost/api/admin/kegiatan/${otherKegiatanId}/import/match`, {
       method: 'POST',
-      body: JSON.stringify({ pesertaId: certId, blobUrl: 'https://example.com/manual.pdf', fileSize: 1024 }),
+      body: JSON.stringify({ pesertaId: certId, blobUrl: 'https://abc123.public.blob.vercel-storage.com/manual.pdf', fileSize: 1024 }),
     });
     const response = await POST(request, { params: Promise.resolve({ id: String(otherKegiatanId) }) });
     expect(response.status).toBe(404);
+  });
+
+  it('rejects a blobUrl that is not a Vercel Blob URL', async () => {
+    const request = new Request(`http://localhost/api/admin/kegiatan/${kegiatanId}/import/match`, {
+      method: 'POST',
+      body: JSON.stringify({ pesertaId: certId, blobUrl: 'https://example.com/manual.pdf', fileSize: 1024 }),
+    });
+    const response = await POST(request, { params: Promise.resolve({ id: String(kegiatanId) }) });
+    expect(response.status).toBe(400);
   });
 });
