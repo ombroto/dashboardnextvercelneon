@@ -1,4 +1,4 @@
-import { eq, desc, count, sql } from 'drizzle-orm';
+import { eq, desc, count, sql, asc } from 'drizzle-orm';
 import { db } from '@/db';
 import { kegiatan, sertifikat, type Kegiatan } from '@/db/schema';
 
@@ -68,4 +68,18 @@ export async function getKegiatanById(
   const totalPeserta = Number(counts.totalPeserta);
   const jumlahLulus = Number(counts.jumlahLulus);
   return { ...row, totalPeserta, jumlahLulus, jumlahTidakLulus: totalPeserta - jumlahLulus };
+}
+
+export interface KegiatanPesertaOption {
+  id: number;
+  nama: string;
+  nik: string;
+}
+
+export async function listPesertaByKegiatan(kegiatanId: number): Promise<KegiatanPesertaOption[]> {
+  return db
+    .select({ id: sertifikat.id, nama: sertifikat.nama, nik: sertifikat.nik })
+    .from(sertifikat)
+    .where(eq(sertifikat.kegiatanId, kegiatanId))
+    .orderBy(asc(sertifikat.nama));
 }
