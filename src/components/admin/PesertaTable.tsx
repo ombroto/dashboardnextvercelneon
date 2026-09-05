@@ -6,16 +6,16 @@ import { IconButton } from '@/components/ui/IconButton';
 import { ReplaceFileButton } from '@/components/admin/ReplaceFileButton';
 import { deleteSertifikatAction } from '@/app/admin/actions';
 
-interface PenerimaTableProps {
+interface PesertaTableProps {
   q?: string;
   status?: 'siap' | 'belum';
   sort?: 'nama' | 'nik' | 'tanggal';
   dir?: 'asc' | 'desc';
 }
 
-function buildHref(params: PenerimaTableProps, overrides: Partial<PenerimaTableProps>): string {
+function buildHref(params: PesertaTableProps, overrides: Partial<PesertaTableProps>): string {
   const merged = { ...params, ...overrides };
-  const search = new URLSearchParams({ tab: 'penerima' });
+  const search = new URLSearchParams({ tab: 'peserta' });
   if (merged.q) search.set('q', merged.q);
   if (merged.status) search.set('status', merged.status);
   if (merged.sort) search.set('sort', merged.sort);
@@ -23,17 +23,17 @@ function buildHref(params: PenerimaTableProps, overrides: Partial<PenerimaTableP
   return `/admin?${search.toString()}`;
 }
 
-function sortHeaderHref(params: PenerimaTableProps, column: 'nama' | 'nik' | 'tanggal'): string {
+function sortHeaderHref(params: PesertaTableProps, column: 'nama' | 'nik' | 'tanggal'): string {
   const nextDir = params.sort === column && params.dir === 'asc' ? 'desc' : 'asc';
   return buildHref(params, { sort: column, dir: nextDir });
 }
 
-function sortIndicator(params: PenerimaTableProps, column: 'nama' | 'nik' | 'tanggal'): string {
+function sortIndicator(params: PesertaTableProps, column: 'nama' | 'nik' | 'tanggal'): string {
   if (params.sort !== column) return '';
   return params.dir === 'desc' ? '↓' : '↑';
 }
 
-export async function PenerimaTable(props: PenerimaTableProps) {
+export async function PesertaTable(props: PesertaTableProps) {
   const { q, status, sort, dir } = props;
   const filter: GetAllSertifikatFilter = { q, status, sort, dir };
   const rows = await getAllSertifikat(filter);
@@ -48,7 +48,7 @@ export async function PenerimaTable(props: PenerimaTableProps) {
     <div style={{ marginTop: 18, borderRadius: 'var(--radius-xl)', background: 'var(--glass-regular)', border: '1px solid var(--glass-border)', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', borderBottom: '1px solid var(--border-subtle)' }}>
         <form method="get" style={{ width: 290 }}>
-          <input type="hidden" name="tab" value="penerima" />
+          <input type="hidden" name="tab" value="peserta" />
           {status && <input type="hidden" name="status" value={status} />}
           {sort && <input type="hidden" name="sort" value={sort} />}
           {dir && <input type="hidden" name="dir" value={dir} />}

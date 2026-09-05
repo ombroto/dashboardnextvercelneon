@@ -1,7 +1,7 @@
 import { StatsCards } from '@/components/admin/StatsCards';
 import { AdminTabs } from '@/components/admin/AdminTabs';
-import { UploadTab } from '@/components/admin/UploadTab';
-import { PenerimaTable } from '@/components/admin/PenerimaTable';
+import { KegiatanList } from '@/components/admin/KegiatanList';
+import { PesertaTable } from '@/components/admin/PesertaTable';
 import { LogTab } from '@/components/admin/LogTab';
 import { Button } from '@/components/ui/Button';
 import { logoutAction } from '@/app/admin/actions';
@@ -12,8 +12,8 @@ export default async function AdminPage({
 }: {
   searchParams: Promise<{ tab?: string; q?: string; status?: 'siap' | 'belum'; sort?: 'nama' | 'nik' | 'tanggal'; dir?: 'asc' | 'desc' }>;
 }) {
-  const { tab = 'unggah', q, status, sort, dir } = await searchParams;
-  const penerimaCount = await countAllSertifikat();
+  const { tab = 'kegiatan', q, status, sort, dir } = await searchParams;
+  const pesertaCount = await countAllSertifikat();
 
   return (
     <main style={{ minHeight: '100vh', padding: '20px 32px 56px' }}>
@@ -28,9 +28,9 @@ export default async function AdminPage({
           </form>
         </div>
         <StatsCards />
-        <AdminTabs current={tab} penerimaCount={penerimaCount} />
-        {tab === 'unggah' && <UploadTab />}
-        {tab === 'penerima' && <PenerimaTable q={q} status={status} sort={sort} dir={dir} />}
+        <AdminTabs current={tab} pesertaCount={pesertaCount} />
+        {tab === 'kegiatan' && <KegiatanList />}
+        {tab === 'peserta' && <PesertaTable q={q} status={status} sort={sort} dir={dir} />}
         {tab === 'log' && <LogTab />}
       </div>
     </main>

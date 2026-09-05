@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Tabs } from '@/components/ui/Tabs';
 
-export function AdminTabs({ current, penerimaCount }: { current: string; penerimaCount: number }) {
+export function AdminTabs({ current, pesertaCount }: { current: string; pesertaCount: number }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -16,8 +16,8 @@ export function AdminTabs({ current, penerimaCount }: { current: string; penerim
   return (
     <Tabs
       items={[
-        { key: 'unggah', label: 'Unggah Berkas', icon: 'upload' },
-        { key: 'penerima', label: 'Data Penerima', badge: penerimaCount },
+        { key: 'kegiatan', label: 'Kegiatan' },
+        { key: 'peserta', label: 'Data Peserta', badge: pesertaCount },
         { key: 'log', label: 'Log Unduhan' },
       ]}
       value={current}
