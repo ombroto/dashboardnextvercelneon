@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar, integer, timestamp, pgEnum, date, index } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, varchar, integer, timestamp, pgEnum, date, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 export const sertifikatStatus = pgEnum('sertifikat_status', ['siap', 'belum']);
@@ -52,6 +52,7 @@ export const sertifikat = pgTable(
     index('sertifikat_nik_idx').on(table.nik),
     index('sertifikat_nama_lower_idx').on(sql`lower(${table.nama})`),
     index('sertifikat_email_lower_idx').on(sql`lower(${table.email})`),
+    uniqueIndex('sertifikat_kegiatan_nik_unique').on(table.kegiatanId, table.nik),
   ]
 );
 

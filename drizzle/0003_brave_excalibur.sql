@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "sertifikat_kegiatan_nik_unique" ON "sertifikat" USING btree ("kegiatan_id","nik");
