@@ -21,7 +21,7 @@ Public certificate search/download portal + admin import panel for BPIP Diklat, 
 1. Import the repo into Vercel.
 2. Set `DATABASE_URL`, `AUTH_SECRET`, `BLOB_READ_WRITE_TOKEN`, and the `ADMIN_*` vars as project environment variables.
 3. Apply the schema with a real migration rather than `db:push` against production: run `npx drizzle-kit migrate` (using the migrations committed under `drizzle/`) against the production `DATABASE_URL`, then run `npm run db:seed` — both before or after the first deploy; neither runs automatically on deploy. `db:push` stays fine for local dev, but it's a live schema diff/sync tool, not a migration, so avoid it against a populated production database.
-4. **Requires a Vercel Pro plan (or higher).** The ZIP import route (`src/app/api/admin/import/zip/route.ts`) sets `maxDuration = 300` (also mirrored in `vercel.json`), and Vercel's Hobby tier caps function duration at 60 seconds — a Hobby deployment will fail for this route as configured. If you're deploying on Hobby, either upgrade to Pro or lower `maxDuration` in both `vercel.json` and the route file (accepting a shorter time budget for processing large ZIP archives).
+4. **Requires a Vercel Pro plan (or higher).** The ZIP import route (`src/app/api/admin/kegiatan/[id]/import/zip/route.ts`) sets `maxDuration = 300` (also mirrored in `vercel.json`), and Vercel's Hobby tier caps function duration at 60 seconds — a Hobby deployment will fail for this route as configured. If you're deploying on Hobby, either upgrade to Pro or lower `maxDuration` in both `vercel.json` and the route file (accepting a shorter time budget for processing large ZIP archives).
 5. Deploy.
 
 ## Migrations

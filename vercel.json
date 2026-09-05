@@ -1,6 +1,6 @@
 {
   "functions": {
-    "src/app/api/admin/import/zip/route.ts": {
+    "src/app/api/admin/kegiatan/[id]/import/zip/route.ts": {
       "maxDuration": 300
     }
   }
