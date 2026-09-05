@@ -1,2 +1,2 @@
-nik,nama,email,kegiatan,tanggal_terbit,nomor,jam
-5555555555555555,Peserta ZIP E2E,e2e.unique@example.com,Uji ZIP E2E,2026-02-01,SK-E2E-UNIQUE-9001/UJI/2026,8
+nama_peserta;Username;Email;Provinsi;Kabupaten / kota;Asal instansi
+Peserta ZIP E2E;5555555555555555;e2e.unique@example.com;Jawa Tengah;KOTA SEMARANG;Universitas Diponegoro
